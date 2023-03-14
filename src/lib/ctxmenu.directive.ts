@@ -5,7 +5,7 @@ import { ContextMenuItem } from 'src/lib/types';
 
 
 @Directive({
-    selector: '[contextMenu]',
+    selector: '[ngx-ctx-menu]',
     standalone: true
 })
 export class ContextMenuDirective {
@@ -13,12 +13,12 @@ export class ContextMenuDirective {
     /**
      * The data representing the item the context-menu was opened for.
      */
-    @Input("contextMenuData") data: any;
+    @Input("ngx-ctx-menu-context") data: any;
 
     /**
      * The items that will be bound to the context menu.
      */
-    @Input("contextMenuItems") menuItems: ContextMenuItem[];
+    @Input("ngx-ctx-menu") menuItems: ContextMenuItem[];
 
     constructor(
         private dialog: MatDialog
