@@ -1,0 +1,32 @@
+{
+  "name": "@dotglitch/ngx-ctx-menu",
+  "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/knackstedt/ngx-ctx-menu"
+  },
+  "author": {
+    "email": "andrewk@vivaldi.net",
+    "name": "Andrew G. Knackstedt"
+  },
+  "description": "Angular context menu that works with templates",
+  "keywords": [
+    "angular",
+    "ngx",
+    "typescript",
+    "context-menu",
+    "ivy",
+    "ng2",
+    "ng",
+    "angular-service"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^15.1.0",
+    "@angular/core": "^15.1.0",
+    "@angular/cdk": "^15.1.0",
+    "@angular/material": "^15.1.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

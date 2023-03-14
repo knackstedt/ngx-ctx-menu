@@ -1,0 +1,37 @@
+<table>
+    <tbody>
+        <ng-container *ngFor="let item of items">
+            <ng-container>
+
+                <!-- A row with a click action -->
+                <tr #row
+                    *ngIf="item != 'seperator'"
+                    [class.disabled]="item.disabled"
+                    (click)="!item.disabled && onMenuItemClick(item, row, $event)"
+                    [class.hover]="item['children'] && row['hover']"
+                    (pointerenter)="row['hover'] = true"
+                    (pointerleave)="row['hover'] = false"
+                >
+                    <td class="icon">
+                        <img *ngIf="matIconRx.test(item.icon); else matIcon" [src]="item.icon" />
+                        <ng-template #matIcon>
+                            <mat-icon [fontIcon]="item.icon"></mat-icon>
+                        </ng-template>
+                    </td>
+                    <td class="label" [innerHTML]="formatLabel(item.label)">
+                    </td>
+                    <td class="shortcut">
+                        {{item.shortcutLabel}}
+                    </td>
+                    <td>
+                        <mat-icon *ngIf="item.children || item.childTemplate">chevron_right</mat-icon>
+                    </td>
+                </tr>
+
+                <tr class="hr" *ngIf="item == 'seperator'" >
+                    <td colspan="4"></td>
+                </tr>
+            </ng-container>
+        </ng-container>
+    </tbody>
+</table>
