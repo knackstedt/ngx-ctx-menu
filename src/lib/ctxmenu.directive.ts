@@ -1,7 +1,7 @@
 import { Directive, Input, HostListener, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { calcMenuItemBounds, ContextMenuComponent } from 'src/lib/context-menu/context-menu.component';
-import { ContextMenuItem } from 'src/lib/types';
+import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context-menu.component';
+import { ContextMenuItem } from './types';
 
 
 @Directive({
