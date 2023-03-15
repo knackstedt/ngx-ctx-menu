@@ -8,7 +8,7 @@ import { ContextMenuItem } from 'src/lib/types';
     selector: '[ngx-app-menu]',
     standalone: true
 })
-export class AppMenuDirective {
+export class NgxAppMenuDirective {
 
     /**
      * The data representing the item the context-menu was opened for.

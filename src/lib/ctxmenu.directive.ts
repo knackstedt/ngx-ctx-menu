@@ -8,7 +8,7 @@ import { ContextMenuItem } from 'src/lib/types';
     selector: '[ngx-ctx-menu]',
     standalone: true
 })
-export class ContextMenuDirective {
+export class NgxContextMenuDirective {
 
     /**
      * The data representing the item the context-menu was opened for.
@@ -71,7 +71,7 @@ export class ContextMenuDirective {
 
 // Helper to open the context menu without using the directive.
 export const openContextMenu = (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent) => {
-    const ctx = new ContextMenuDirective(dialog);
+    const ctx = new NgxContextMenuDirective(dialog);
     ctx.data = data;
     ctx.menuItems = menuItems;
     ctx.onContextMenu(evt);
