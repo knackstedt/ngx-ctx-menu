@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Inject, Input } from '@angular/core';
+import { Component, HostListener, Inject, Input, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ContextMenuItem } from 'src/lib/types';
@@ -54,15 +54,15 @@ export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
 }
 
 @Component({
-    selector: 'template-wrapper',
+    selector: 'ngx-ctx-menu-template-container',
     template: `<ng-template *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />`,
     imports: [ CommonModule ],
     standalone: true
 })
 class TemplateWrapper {
 
-    data;
-    template;
+    data: Object;
+    template: TemplateRef<any>;
 
     constructor(
         public dialogRef: MatDialogRef<any>,
@@ -74,7 +74,7 @@ class TemplateWrapper {
 }
 
 @Component({
-    selector: 'app-context-menu',
+    selector: 'ngx-ctx-menu',
     templateUrl: './context-menu.component.html',
     styleUrls: ['./context-menu.component.scss'],
     imports: [
@@ -87,7 +87,7 @@ export class ContextMenuComponent {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
 
-    public matIconRx = /[^a-z_\-]/i;
+    public readonly matIconRx = /[^a-z_\-]/i;
 
     constructor(
         public dialog: MatDialog,
@@ -104,28 +104,39 @@ export class ContextMenuComponent {
      * @param evt
      * @returns
      */
-    onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, evt) {
+    async onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, evt) {
         if (typeof item == 'string') return;
+
+
+        // If cache is enabled, only load if we don't have any children.
+        const forceLoad = (item.cacheResolvedChildren ? !item.children : true);
+
+        if (item.childrenResolver && forceLoad) {
+            item['_isResolving'] = true;
+            item.children = await item.childrenResolver(this.data);
+            item['_isResolving'] = false;
+        }
 
         if (!item.childTemplate && !item.children) {
             item.action(this.data);
             this.dialogRef.close(true);
+            return;
         }
-        else if (item.childTemplate) {
 
-            // Need X pos, Y pos, width and height
-            const bounds = row.getBoundingClientRect();
+        // Need X pos, Y pos, width and height
+        const bounds = row.getBoundingClientRect();
 
+        const cords = {
+            top: null,
+            left: null,
+            bottom: null,
+            right: null
+        };
 
-            let width = item.childWidth || 300;
-            let height = item.childHeight || 500;
-
-            const cords = {
-                top: null,
-                left: null,
-                bottom: null,
-                right: null
-            };
+        // Set position coordinates
+        if (item.childTemplate) {
+            const width = item.childWidth || 300;
+            const height = item.childHeight || 500;
 
             if (bounds.y + height > window.innerHeight)
                 cords.bottom = "0px";
@@ -134,41 +145,10 @@ export class ContextMenuComponent {
 
             if (!cords.bottom) cords.top = bounds.y + "px";
             if (!cords.left) cords.left = bounds.x + bounds.width + "px";
-
-
-            let _s = this.dialog.open(TemplateWrapper, {
-                position: cords,
-                panelClass: "context-menu",
-                backdropClass: "context-menu-backdrop",
-                data: {
-                    data: this.data,
-                    template: item.childTemplate
-                }
-            })
-                .afterClosed()
-                .subscribe((result) => {
-                    if (result) {
-                        if (item.action)
-                            item.action(result);
-                        this.dialogRef.close(true);
-                    }
-                    _s.unsubscribe();
-                });
         }
         else if (item.children) {
             const {width, height} = calcMenuItemBounds(item.children);
 
-            // Need X pos, Y pos, width and height
-            const bounds = row.getBoundingClientRect();
-
-
-            const cords = {
-                top: null,
-                left: null,
-                bottom: null,
-                right: null
-            };
-
             if (bounds.y + height > window.innerHeight)
                 cords.bottom = "0px";
             if (bounds.x + width > window.innerWidth)
@@ -176,26 +156,30 @@ export class ContextMenuComponent {
 
             if (!cords.bottom) cords.top = bounds.y + "px";
             if (!cords.left) cords.left = bounds.x + bounds.width + "px";
+        }
 
+        const component = item.children ? ContextMenuComponent : TemplateWrapper as any;
 
-            let _s = this.dialog.open(ContextMenuComponent, {
-                position: cords,
-                panelClass: "context-menu",
-                backdropClass: "context-menu-backdrop",
-                data: {
-                    data: this.data,
-                    items: item['children']
-                }
-            })
+        let _s = this.dialog.open(component, {
+            position: cords,
+            panelClass: "ngx-ctx-menu",
+            backdropClass: "ngx-ctx-menu-backdrop",
+            data: {
+                data: this.data,
+                items: item.children,
+                template: item.childTemplate
+            }
+        })
             .afterClosed()
             .subscribe((result) => {
                 if (result) {
+                    if (item.action)
+                        item.action(result);
                     this.dialogRef.close(true);
                 }
 
                 _s.unsubscribe();
             });
-        }
     }
 
     /**

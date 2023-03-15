@@ -66,9 +66,9 @@ export class AppMenuDirective {
                 items: items,
                 // dialog: this.dialog
             },
-            panelClass: "app-menu",
+            panelClass: "ngx-app-menu",
             position: cords,
-            backdropClass: "app-menu-backdrop"
+            backdropClass: "ngx-app-menu-backdrop"
         });
     }
 }

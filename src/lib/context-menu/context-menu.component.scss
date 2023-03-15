@@ -1,5 +1,5 @@
 :ng-deep {
-    .cdk-overlay-container .context-menu {
+    .cdk-overlay-container .ngx-ctx-menu {
         --mdc-dialog-container-color: var(--ctx-menu-background-color, #2f2f2f);
 
         .mdc-dialog__container {
@@ -9,11 +9,12 @@
             transform: none;
         }
     }
+
     .cdk-overlay-container .context-menu-backdrop.cdk-overlay-backdrop-showing {
         opacity: 0;
     }
 
-    .cdk-overlay-pane.context-menu {
+    .cdk-overlay-pane.ngx-ctx-menu {
         .mat-dialog-container {
             padding: 0;
         }

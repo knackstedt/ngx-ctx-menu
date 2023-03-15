@@ -45,13 +45,28 @@ type BaseCtx<T = any> = {
     children?: ContextMenuItem<T>[],
 
     /**
+     * Optional resolver that dynamically loads the contents
+     * for the menu item.
+     * Can be used to dynamically determine submenus
+     */
+    childrenResolver?: (data: T) => Promise<ContextMenuItem<T>[]>,
+
+    /**
+     * If `childrenResolver` is provided, disable caching of
+     * the resolved children.
+     */
+    cacheResolvedChildren?: boolean,
+
+    /**
      * Instead of an array of children, render a template
      */
-    childTemplate?: TemplateRef<T>;
+    childTemplate?: TemplateRef<T>,
+
     /**
      * Width of child component
      */
     childWidth?: number,
+
     /**
      * Height of child component
      */

@@ -62,9 +62,9 @@ export class ContextMenuDirective {
                 items: items,
                 // dialog: this.dialog
             },
-            panelClass: "context-menu",
+            panelClass: "ngx-ctx-menu",
             position: cords,
-            backdropClass: "context-menu-backdrop"
+            backdropClass: "ngx-ctx-menu-backdrop"
         });
     }
 }
