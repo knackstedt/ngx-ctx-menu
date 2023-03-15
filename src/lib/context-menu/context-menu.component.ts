@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Inject, Input, TemplateRef } from '@angular/core';
+import { Component, HostListener, Inject, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ContextMenuItem } from 'src/lib/types';
@@ -83,7 +83,7 @@ class TemplateWrapper {
     ],
     standalone: true
 })
-export class ContextMenuComponent {
+export class ContextMenuComponent implements OnInit {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
 
@@ -96,6 +96,19 @@ export class ContextMenuComponent {
     ) {
         this.data  = this._data.data;
         this.items = this._data.items;
+    }
+
+    ngOnInit() {
+        this.items.forEach(i => {
+            if (typeof i == "string") return;
+
+            if (typeof i.isDisabled == "function")
+                i['_disabled'] = !i.isDisabled(this.data);
+
+            if (typeof i.isVisible == "function")
+                i['_visible'] = !i.isVisible(this.data);
+
+        })
     }
 
     /**

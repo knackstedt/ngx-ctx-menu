@@ -47,20 +47,19 @@ export class NgxContextMenuDirective {
         if (!cords.bottom) cords.top = evt.clientY + "px";
         if (!cords.right) cords.left = evt.clientX + "px";
 
-        let items = [];
-        this.menuItems.forEach((item: ContextMenuItem) => {
-            items.push(typeof item == "string" ? item : {
-                ...item,
-                active: typeof item.canActivate == "function" ? item.canActivate(this.data) : true
-            });
-        });
+        // let items = [];
+        // this.menuItems.forEach((item: ContextMenuItem) => {
+        //     items.push(typeof item == "string" ? item : {
+        //         ...item,
+        //         active: typeof item.canActivate == "function" ? item.canActivate(this.data) : true
+        //     });
+        // });
 
         // Create the context menu
         this.dialog.open(ContextMenuComponent, {
             data: {
                 data: this.data,
-                items: items,
-                // dialog: this.dialog
+                items: this.menuItems,
             },
             panelClass: "ngx-ctx-menu",
             position: cords,

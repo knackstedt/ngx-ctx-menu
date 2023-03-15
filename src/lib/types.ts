@@ -15,14 +15,15 @@ type BaseCtx<T = any> = {
 
     /**
      * Callback method that is called upon a context menu activation
-     * that when returning false, will disable menu items.
+     * that when returning false, will show the item in a disabled state.
      */
-    canActivate?: (data: T) => boolean,
+    isDisabled?: (data: T) => boolean,
 
     /**
-     * Set whether the menu item appear disabled.
+     * Callback method that is called upon a context menu activation
+     * that when returning false, will hide the menu item.
      */
-    disabled?: boolean,
+    isVisible?: (data: T) => boolean,
 
     /**
      * If a shortcut is set, the text-label.
@@ -47,7 +48,7 @@ type BaseCtx<T = any> = {
     /**
      * Optional resolver that dynamically loads the contents
      * for the menu item.
-     * Can be used to dynamically determine submenus
+     * Can be used to dynamically determine the submenu contents
      */
     childrenResolver?: (data: T) => Promise<ContextMenuItem<T>[]>,
 
@@ -71,8 +72,6 @@ type BaseCtx<T = any> = {
      * Height of child component
      */
     childHeight?: number,
-
-    seperator?: boolean;
 };
 
 export type ContextMenuItem<T = any> =
