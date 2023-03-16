@@ -45,8 +45,15 @@ export class NgxAppMenuDirective {
 
         if (src.y + height > window.innerHeight)
             cords.bottom = "16px";
-        if (src.x + src.width + width > window.innerWidth)
-            cords.right = "16px";
+        if (src.x + src.width + width > window.innerWidth) {
+
+            // Adjust the Y position if we're going to clip off screen
+            if (src.y + src.height + height > window.innerHeight) {
+                cords.bottom = window.innerHeight - (src.y - src.height)
+            }
+
+            cords.right = (window.innerWidth - src.x) + width;
+        }
 
         if (!cords.bottom) cords.top = src.y + "px";
         if (!cords.right) cords.left = (src.x + src.width) + "px";
