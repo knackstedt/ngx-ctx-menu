@@ -16,7 +16,7 @@ export class NgxAppMenuDirective {
     @Input("ngx-app-menu-context") data: any;
 
     /**
-     * The items that will be bound to the context menu.
+     * The items that will be bound to the menu.
      */
     @Input("ngx-app-menu") menuItems: ContextMenuItem[];
 
@@ -32,7 +32,7 @@ export class NgxAppMenuDirective {
         evt.preventDefault();
         evt.stopPropagation();
 
-        const bounds = (this.viewContainer.element.nativeElement as HTMLElement).getBoundingClientRect();
+        const src = (this.viewContainer.element.nativeElement as HTMLElement).getBoundingClientRect();
 
         const { width, height } = calcMenuItemBounds(this.menuItems);
 
@@ -43,21 +43,13 @@ export class NgxAppMenuDirective {
             right: null
         };
 
-        if (bounds.y + height > window.innerHeight)
-            cords.bottom = (window.innerHeight - (bounds.y + bounds.height)) + "px";
-        if (bounds.x + width > window.innerWidth)
-            cords.right = (window.innerWidth - (bounds.x + bounds.width)) + "px";
+        if (src.y + height > window.innerHeight)
+            cords.bottom = "16px";
+        if (src.x + src.width + width > window.innerWidth)
+            cords.right = "16px";
 
-        if (!cords.bottom) cords.top = (bounds.y + bounds.height) + "px";
-        if (!cords.right) cords.left = (bounds.x + bounds.width) + "px";
-
-        // let items = [];
-        // this.menuItems.forEach((item: ContextMenuItem) => {
-        //     items.push(typeof item == "string" ? item : {
-        //         ...item,
-        //         active: typeof item.isDisabled == "function" ? item.isDisabled(this.data) : true
-        //     });
-        // });
+        if (!cords.bottom) cords.top = src.y + "px";
+        if (!cords.right) cords.left = (src.x + src.width) + "px";
 
         // Create the context menu
         this.dialog.open(ContextMenuComponent, {
