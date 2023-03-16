@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, Inject, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { ContextMenuItem } from 'src/lib/types';
+import { ContextMenuItem } from '../types';
 
 export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
     const calcHeight = () => {
