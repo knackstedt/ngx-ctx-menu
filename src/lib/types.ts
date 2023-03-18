@@ -4,7 +4,8 @@ type BaseCtx<T = any> = {
     /**
      * Label for the menu-item
      */
-    label: string,
+    label?: string,
+    labelTemplate?: TemplateRef<any>,
 
     /**
      * Callback method that is called when a user activates

@@ -18,8 +18,12 @@
                             <mat-icon [fontIcon]="item.icon"></mat-icon>
                         </ng-template>
                     </td>
-                    <td class="label" [innerHTML]="formatLabel(item.label)">
+                    <td class="label" *ngIf="item.label" [innerHTML]="item['_formattedLabel']"></td>
+                    <td class="label" *ngIf="item.labelTemplate">
+                        <ng-container [ngTemplateOutlet]="item.labelTemplate" [ngTemplateOutletContext]="data">
+                        </ng-container>
                     </td>
+
                     <td class="shortcut">
                         {{item.shortcutLabel}}
                     </td>

@@ -102,6 +102,9 @@ export class ContextMenuComponent implements OnInit {
         this.items.forEach(i => {
             if (typeof i == "string") return;
 
+            if (i.label)
+                i['_formattedLabel'] = this.formatLabel(i.label);
+
             if (typeof i.isDisabled == "function")
                 i['_disabled'] = !i.isDisabled(this.data);
 
