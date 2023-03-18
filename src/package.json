@@ -1,6 +1,6 @@
 {
   "name": "@dotglitch/ngx-ctx-menu",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "repository": {
     "url": "https://github.com/knackstedt/ngx-ctx-menu"
   },
@@ -20,9 +20,9 @@
     "angular-service"
   ],
   "peerDependencies": {
+    "@angular/cdk": "^15.1.0",
     "@angular/common": "^15.1.0",
     "@angular/core": "^15.1.0",
-    "@angular/cdk": "^15.1.0",
     "@angular/material": "^15.1.0"
   },
   "dependencies": {
