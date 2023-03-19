@@ -1,6 +1,6 @@
 import { TemplateRef } from '@angular/core';
 
-type BaseCtx<T = any> = {
+export type BaseCtx<T = any> = {
     /**
      * Label for the menu-item
      */
@@ -73,8 +73,18 @@ type BaseCtx<T = any> = {
      * Height of child component
      */
     childHeight?: number,
+
+    /**
+     */
+    separator?: false
 };
+
+type Separator = {
+    label: string,
+    separator: true
+}
 
 export type ContextMenuItem<T = any> =
     BaseCtx<T> |
-    "seperator";
+    Separator |
+    "separator";

@@ -45,11 +45,41 @@ tr {
     &.disabled .label {
         color: var(--ctx-menu-disabled-text-color, #919191);
     }
-
-    &.hr td {
-        height: 1px;
-        background: var(--ctx-menu-separator-color, #2a2a2a);
+    .center {
+        text-align: center;
     }
+}
+.hr {
+    height: 1px;
+    // background: var(--ctx-menu-separator-color, #2a2a2a);
+    text-align: center;
+    position: relative;
+
+    &::before,
+    &::after {
+        content: "";
+        background: var(--ctx-menu-separator-color, #2a2a2a);
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        height: 1px;
+        margin: auto;
+        width: 300px;
+    }
+    &::before {
+        right: calc(100% + 4px);
+    }
+    &::after {
+        left: calc(100% + 4px);
+    }
+}
+
+hr {
+    background: var(--ctx-menu-separator-color, #2a2a2a);
+    border: 0;
+    height: 1px;
+    margin: 0;
 }
 
 .icon {

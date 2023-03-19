@@ -158,7 +158,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
         cords.top = cords.top + 'px';
         cords.left = cords.left + 'px';
 
-        console.log("Coordinates", cords, {width, height, winh, winw})
+        // console.log("Coordinates", cords, {width, height, winh, winw})
 
         return cords;
     }

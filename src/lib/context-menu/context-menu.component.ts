@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, Inject, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { ContextMenuItem } from '../types';
+import { BaseCtx, ContextMenuItem } from '../types';
 
 export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
     const calcHeight = () => {
@@ -14,17 +14,19 @@ export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
     const calcWidth = () => {
 
         const items = menuItems
-            .filter(i => i != "seperator");
+            .filter(i => i != "separator" && !i.separator) as BaseCtx[];
 
         // TODO: this is probably not right.
-        const lName = (items as any)
+        const lName = items
+            .filter(e => typeof e != 'string')
             .sort((a, b) => a.label.length - b.label.length)
             .filter(e => e)
             .pop().label;
-        const lShort = (items as any)
-            .sort((a, b) => a.label.length - b.label.length)
+        const lShort = items
+            .filter(e => typeof e != 'string')
+            .sort((a, b) => a.shortcutLabel?.length - b.shortcutLabel?.length)
             .filter(e => e)
-            .pop().label;
+            .pop().shortcutLabel;
 
         // Create dummy div that will calculate the width for us.
         const div = document.createElement("div");
@@ -42,8 +44,8 @@ export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
         const w = div.getBoundingClientRect().width;
 
         // Clear element out of DOM
-        div.remove();
-
+        // div.remove();
+        console.log("width", w);
         return w;
     }
 
@@ -101,6 +103,7 @@ export class ContextMenuComponent implements OnInit {
     ngOnInit() {
         this.items.forEach(i => {
             if (typeof i == "string") return;
+            if (i.separator == true) return;
 
             if (i.label)
                 i['_formattedLabel'] = this.formatLabel(i.label);
@@ -122,7 +125,7 @@ export class ContextMenuComponent implements OnInit {
      */
     async onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, evt) {
         if (typeof item == 'string') return;
-
+        if (item.separator == true) return;
 
         // If cache is enabled, only load if we don't have any children.
         const forceLoad = (item.cacheResolvedChildren ? !item.children : true);
@@ -210,8 +213,8 @@ export class ContextMenuComponent implements OnInit {
     /**
      * Close the context menu under these circumstances
      */
-    @HostListener("window:resize", ['event'])
-    @HostListener("window:blur", ['event'])
+    // @HostListener("window:resize", ['event'])
+    // @HostListener("window:blur", ['event'])
     close() {
         this.dialogRef.close();
     }

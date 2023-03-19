@@ -5,7 +5,7 @@
 
                 <!-- A row with a click action -->
                 <tr #row
-                    *ngIf="item != 'seperator' && !item['_visible']"
+                    *ngIf="item != 'separator' && item.separator != true && !item['_visible']"
                     [class.disabled]="item['_disabled']"
                     (click)="!item['_disabled'] && onMenuItemClick(item, row, $event)"
                     [class.hover]="item['children'] && row['hover']"
@@ -32,8 +32,17 @@
                     </td>
                 </tr>
 
-                <tr class="hr" *ngIf="item == 'seperator'">
-                    <td colspan="4"></td>
+                <tr *ngIf="item != 'separator' && item.separator == true" class="disabled">
+                    <td class="center" colspan="4">
+                        <span class="hr">
+                            {{item['label'] || ''}}
+                        </span>
+                    </td>
+                </tr>
+                <tr *ngIf="item == 'separator'" class="disabled">
+                    <td colspan="4">
+                        <hr/>
+                    </td>
                 </tr>
             </ng-container>
         </ng-container>
