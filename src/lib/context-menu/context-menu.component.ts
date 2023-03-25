@@ -45,7 +45,6 @@ export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
 
         // Clear element out of DOM
         // div.remove();
-        console.log("width", w);
         return w;
     }
 
