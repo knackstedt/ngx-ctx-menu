@@ -90,7 +90,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
             // Lower bound
             cords.top = Math.max(this.config?.edgePadding || 0, cords.top);
             // Upper bound
-            cords.top = Math.min(winh, cords.top);
+            cords.top = Math.min(winh - height, cords.top);
 
             if (this.config?.position == "left") {
                 cords.left = src.x - (width + (this.config?.arrowSize || 0) + arrowPadding);
@@ -102,7 +102,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
             // Lower bound
             cords.left = Math.max(this.config?.edgePadding || 0, cords.left);
             // Upper bound
-            cords.left = Math.min(winw, cords.left);
+            cords.left = Math.min(winw - width, cords.left);
         }
         else if (this.config?.position == "top" || this.config?.position == "bottom") {
             switch (this.config?.alignment) {
@@ -138,7 +138,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
             // Lower bound
             cords.left = Math.max(this.config?.edgePadding || 0, cords.left);
             // Upper bound
-            cords.left = Math.min(winw, cords.left);
+            cords.left = Math.min(winw - width, cords.left);
 
 
             if (this.config?.position == "top") {
@@ -151,7 +151,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
             // Lower bound
             cords.top = Math.max(this.config?.edgePadding || 0, cords.top);
             // Upper bound
-            cords.top = Math.min(winh, cords.top);
+            cords.top = Math.min(winh - height, cords.top);
         }
 
         // Assign unit
