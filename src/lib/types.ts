@@ -16,7 +16,7 @@ export type BaseCtx<T = any> = {
 
     /**
      * Callback method that is called upon a context menu activation
-     * that when returning false, will show the item in a disabled state.
+     * that when it returns true, will show the item as disabled.
      */
     isDisabled?: (data: T) => boolean,
 

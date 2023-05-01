@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Inject, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseCtx, ContextMenuItem } from '../types';
@@ -88,6 +88,8 @@ export class ContextMenuComponent implements OnInit {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
 
+    @Output() closeSignal = new EventEmitter();
+
     public readonly matIconRx = /[^a-z_\-]/i;
 
     constructor(
@@ -108,10 +110,10 @@ export class ContextMenuComponent implements OnInit {
                 i['_formattedLabel'] = this.formatLabel(i.label);
 
             if (typeof i.isDisabled == "function")
-                i['_disabled'] = !i.isDisabled(this.data);
+                i['_disabled'] = i.isDisabled(this.data);
 
             if (typeof i.isVisible == "function")
-                i['_visible'] = !i.isVisible(this.data);
+                i['_visible'] = i.isVisible(this.data);
 
         })
     }
@@ -136,7 +138,9 @@ export class ContextMenuComponent implements OnInit {
         }
 
         if (!item.childTemplate && !item.children) {
-            item.action(this.data);
+            if (item.action)
+                item.action(this.data);
+
             this.dialogRef.close(true);
             return;
         }
