@@ -202,6 +202,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
                 data: this.data,
                 items: this.menuItems,
                 // dialog: this.dialog
+                config: this.config
             },
             panelClass: "ngx-app-menu",
             position: cords,

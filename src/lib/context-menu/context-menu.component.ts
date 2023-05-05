@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseCtx, ContextMenuItem } from '../types';
+import { NgxAppMenuOptions } from 'src/lib/appmenu.directive';
 
 export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
     const calcHeight = () => {
@@ -87,18 +88,22 @@ class TemplateWrapper {
 export class ContextMenuComponent implements OnInit {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
+    @Input() public config: NgxAppMenuOptions;
 
     @Output() closeSignal = new EventEmitter();
 
     public readonly matIconRx = /[^a-z_\-]/i;
 
     constructor(
+        private viewContainer: ViewContainerRef,
         public dialog: MatDialog,
         public dialogRef: MatDialogRef<any>,
         @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
+        // Defaults are set before @Input() hooks evaluate
         this.data  = this._data.data;
         this.items = this._data.items;
+        this.config = this._data.config;
     }
 
     ngOnInit() {
@@ -116,6 +121,13 @@ export class ContextMenuComponent implements OnInit {
                 i['_visible'] = i.isVisible(this.data);
 
         })
+    }
+
+    ngAfterViewInit() {
+        // Try to make absolutely certain that this component isn't clipping off of the screen.
+        this.afterOpened();
+        setTimeout(this.afterOpened.bind(this), 1000);
+        setTimeout(this.afterOpened.bind(this), 5000);
     }
 
     /**
@@ -220,5 +232,23 @@ export class ContextMenuComponent implements OnInit {
     // @HostListener("window:blur", ['event'])
     close() {
         this.dialogRef.close();
+    }
+
+    /**
+     * Check if the dialog is clipping, and if so, move it back into view.
+     */
+    @HostListener("window:resize")
+    private afterOpened() {
+        const el = this.viewContainer.element.nativeElement as HTMLElement;
+        const { width, height, x, y } = el.getBoundingClientRect();
+
+        if (y + height > window.innerHeight) {
+            el.style.bottom = (this.config.edgePadding || 12) + "px";
+            el.style.top = "";
+        }
+        if (x + width > window.innerWidth) {
+            el.style.right = (this.config.edgePadding || 12) + "px";
+            el.style.left = "";
+        }
     }
 }

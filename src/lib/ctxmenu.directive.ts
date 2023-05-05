@@ -2,6 +2,7 @@ import { Directive, Input, HostListener, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context-menu.component';
 import { ContextMenuItem } from './types';
+import { NgxAppMenuOptions } from 'src/lib/appmenu.directive';
 
 
 @Directive({
@@ -19,6 +20,11 @@ export class NgxContextMenuDirective {
      * The items that will be bound to the context menu.
      */
     @Input("ngx-ctx-menu") menuItems: ContextMenuItem[];
+
+    /**
+     * Configuration for opening the app menu
+     */
+    @Input("ngx-ctx-menu-config") config: NgxAppMenuOptions;
 
     constructor(
         private dialog: MatDialog
@@ -60,6 +66,7 @@ export class NgxContextMenuDirective {
             data: {
                 data: this.data,
                 items: this.menuItems,
+                config: this.config
             },
             panelClass: "ngx-ctx-menu",
             position: cords,
