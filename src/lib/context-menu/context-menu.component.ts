@@ -3,7 +3,7 @@ import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, T
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseCtx, ContextMenuItem } from '../types';
-import { NgxAppMenuOptions } from 'src/lib/appmenu.directive';
+import { NgxAppMenuOptions } from '../appmenu.directive';
 
 export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
     const calcHeight = () => {
