@@ -127,9 +127,10 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         // Try to make absolutely certain that this component isn't clipping off of the screen.
+        // Check every 100ms if the dialog is clipping
         this.afterOpened();
-        setTimeout(this.afterOpened.bind(this), 1000);
-        setTimeout(this.afterOpened.bind(this), 5000);
+        for (let i = 100; i < 5000; i += 100)
+            setTimeout(this.afterOpened.bind(this), i);
     }
 
     /**
@@ -247,22 +248,16 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
         const target = document.querySelector(".ngx-ctx-menu,.ngx-app-menu") as HTMLElement;
         if (!target) return;
 
-        target.style['--checked'] = 'red';
-
         // Move back into view if we're clipping outside of the bottom
         if (y + height > window.innerHeight) {
             const newTop = (window.innerHeight - (height + (this.config.edgePadding || 12))) + "px";
             target.style['margin-top'] = newTop;
-            target.style['--t'] = newTop;
-            el.style['--t'] = newTop;
 
         }
         // Move back into view if we're clipping off the right
         if (x + width > window.innerWidth) {
             const newLeft = (window.innerWidth - (width + (this.config.edgePadding || 12))) + "px"
             target.style['margin-left'] = newLeft;
-            target.style['--l'] = newLeft;
-            el.style['--l'] = newLeft;
         }
     }
 }
