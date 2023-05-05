@@ -71,6 +71,9 @@ export class NgxAppMenuDirective implements AfterViewInit {
         triggers.forEach(t => {
             el.addEventListener(t, this.openDialog.bind(this));
         });
+        if (!triggers) {
+            el.onclick = this.openDialog.bind(this);
+        }
     }
 
     getPosition() {
