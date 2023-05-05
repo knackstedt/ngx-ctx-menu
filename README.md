@@ -25,8 +25,22 @@ $ npm install @dotglitch/ngx-ctx-menu
 
 
 
-
+<!-- 
 Examples
 =====
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](...)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](...) -->
+
+
+Styling
+=====
+```scss
+// You can use these CSS variables to configure colors
+--ngx-ctx-menu-background-color: #000000;
+--ngx-ctx-menu-text-color: #000000;
+--ngx-ctx-menu-hover-background-color: #000000;
+--ngx-ctx-menu-hover-text-color: #000000;
+--ngx-ctx-menu-disabled-text-color: #000000;
+--ngx-ctx-menu-separator-color: #000000;
+--ngx-ctx-menu-shortcut-text-color: #000000;
+```
