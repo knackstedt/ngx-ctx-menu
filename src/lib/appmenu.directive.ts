@@ -57,7 +57,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
     /**
      * Configuration for opening the app menu
      */
-    @Input("ngx-app-menu-config") config: NgxAppMenuOptions;
+    @Input("ngx-app-menu-config") config: NgxAppMenuOptions = {};
 
     constructor(
         private dialog: MatDialog,

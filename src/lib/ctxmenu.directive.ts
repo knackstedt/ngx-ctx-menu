@@ -24,7 +24,7 @@ export class NgxContextMenuDirective {
     /**
      * Configuration for opening the app menu
      */
-    @Input("ngx-ctx-menu-config") config: NgxAppMenuOptions;
+    @Input("ngx-ctx-menu-config") config: NgxAppMenuOptions = {};
 
     constructor(
         private dialog: MatDialog
