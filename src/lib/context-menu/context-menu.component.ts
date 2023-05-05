@@ -244,7 +244,7 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
         const el = this.viewContainer.element.nativeElement as HTMLElement;
         const { width, height, x, y } = el.getBoundingClientRect();
 
-        const target = document.querySelector(".ngx-" + this.id) as HTMLElement;
+        const target = document.querySelector(".ngx-ctx-menu,.ngx-app-menu") as HTMLElement;
         if (target) return;
 
         target.style['--checked'] = 'red';
