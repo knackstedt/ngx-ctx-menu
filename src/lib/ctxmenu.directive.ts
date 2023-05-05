@@ -61,14 +61,18 @@ export class NgxContextMenuDirective {
         //     });
         // });
 
+        const specificId = crypto.randomUUID();
+
         // Create the context menu
         this.dialog.open(ContextMenuComponent, {
             data: {
                 data: this.data,
                 items: this.menuItems,
-                config: this.config
+                config: this.config,
+                id: specificId
+
             },
-            panelClass: "ngx-ctx-menu",
+            panelClass: ["ngx-app-menu", 'ngx-' + specificId],
             position: cords,
             backdropClass: "ngx-ctx-menu-backdrop"
         });

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseCtx, ContextMenuItem } from '../types';
@@ -85,10 +85,11 @@ class TemplateWrapper {
     ],
     standalone: true
 })
-export class ContextMenuComponent implements OnInit {
+export class ContextMenuComponent implements OnInit, AfterViewInit {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
     @Input() public config: NgxAppMenuOptions;
+    @Input() public id: string;
 
     @Output() closeSignal = new EventEmitter();
 
@@ -104,6 +105,7 @@ export class ContextMenuComponent implements OnInit {
         this.data  = this._data.data;
         this.items = this._data.items;
         this.config = this._data.config;
+        this.id = this._data.id;
     }
 
     ngOnInit() {
@@ -242,13 +244,16 @@ export class ContextMenuComponent implements OnInit {
         const el = this.viewContainer.element.nativeElement as HTMLElement;
         const { width, height, x, y } = el.getBoundingClientRect();
 
+        const target = document.querySelector(".ngx-" + this.id) as HTMLElement;
+        if (target) return;
+
+        // Move back into view if we're clipping outside of the bottom
         if (y + height > window.innerHeight) {
-            el.style.bottom = (this.config.edgePadding || 12) + "px";
-            el.style.top = "";
+            target.style['margin-top'] = (window.innerHeight - (height + (this.config.edgePadding || 12))) + "px";
         }
+        // Move back into view if we're clipping off the right
         if (x + width > window.innerWidth) {
-            el.style.right = (this.config.edgePadding || 12) + "px";
-            el.style.left = "";
+            target.style['margin-left'] = (window.innerWidth - (width + (this.config.edgePadding || 12))) + "px";
         }
     }
 }

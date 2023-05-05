@@ -202,15 +202,18 @@ export class NgxAppMenuDirective implements AfterViewInit {
     private openDialog(evt: MouseEvent) {
         const cords = this.getPosition();
 
+        const specificId = crypto.randomUUID();
+
         // Create the context menu
         this.dialog.open(ContextMenuComponent, {
             data: {
                 data: this.data,
                 items: this.menuItems,
                 // dialog: this.dialog
-                config: this.config
+                config: this.config,
+                id: specificId
             },
-            panelClass: "ngx-app-menu",
+            panelClass: ["ngx-app-menu", 'ngx-' + specificId],
             position: cords,
             backdropClass: "ngx-app-menu-backdrop"
         });
