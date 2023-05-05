@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BaseCtx, ContextMenuItem } from '../types';
@@ -85,7 +85,7 @@ class TemplateWrapper {
     ],
     standalone: true
 })
-export class ContextMenuComponent implements OnInit, AfterViewInit {
+export class ContextMenuComponent implements OnInit {
     @Input() public data: any;
     @Input() public items: ContextMenuItem[];
     @Input() public config: NgxAppMenuOptions;
@@ -121,11 +121,8 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
 
             if (typeof i.isVisible == "function")
                 i['_visible'] = i.isVisible(this.data);
-
         })
-    }
 
-    ngAfterViewInit() {
         // Try to make absolutely certain that this component isn't clipping off of the screen.
         // Check every 100ms if the dialog is clipping
         this.afterOpened();
@@ -242,7 +239,9 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
      */
     @HostListener("window:resize")
     private afterOpened() {
-        const el = this.viewContainer.element.nativeElement as HTMLElement;
+        const el = this.viewContainer?.element?.nativeElement as HTMLElement;
+        if (el) return;
+
         const { width, height, x, y } = el.getBoundingClientRect();
 
         const target = document.querySelector(".ngx-ctx-menu,.ngx-app-menu") as HTMLElement;
