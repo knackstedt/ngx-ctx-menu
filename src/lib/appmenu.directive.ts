@@ -66,13 +66,16 @@ export class NgxAppMenuDirective implements AfterViewInit {
 
     ngAfterViewInit() {
         const el = this.viewContainer.element.nativeElement as HTMLElement;
-        const triggers = Array.isArray(this.config.trigger) ? this.config.trigger : [this.config.trigger];
 
-        triggers.forEach(t => {
-            el.addEventListener(t, this.openDialog.bind(this));
-        });
-        if (!triggers) {
+        if (!this.config?.trigger) {
             el.onclick = this.openDialog.bind(this);
+        }
+        else {
+            const triggers = Array.isArray(this.config.trigger) ? this.config.trigger : [this.config.trigger];
+
+            triggers.forEach(t => {
+                el.addEventListener(t, this.openDialog.bind(this));
+            });
         }
     }
 
