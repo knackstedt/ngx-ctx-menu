@@ -5,6 +5,39 @@ import { ContextMenuItem } from './types';
 
 const arrowPadding = 8;
 
+export type NgxAppMenuTriggers = "click" | "dblclick" | "hover";
+
+export type NgxAppMenuOptions = Partial<{
+    /**
+     * Position relative to the element the menu pops-up at
+     */
+    position: "top" | "right" | "bottom" | "left",
+    /**
+     * How the popup is aligned relative to the element
+     */
+    alignment: "center" | "beforestart" | "start" | "end" | "afterend",
+    /**
+     * @hidden
+     * WIP:
+     * Show an error from the dialog pointing to the element
+     */
+    showArrow: boolean,
+    /**
+     * @hidden
+     * WIP:
+     * Size of the arrow.
+     */
+    arrowSize: number,
+    /**
+     * How much padding to add near the edges of the screen.
+     */
+    edgePadding: number,
+    /**
+     * Which event should trigger the app menu
+     */
+    trigger: NgxAppMenuTriggers | NgxAppMenuTriggers[];
+}>;
+
 @Directive({
     selector: '[ngx-app-menu]',
     standalone: true
@@ -22,15 +55,9 @@ export class NgxAppMenuDirective implements AfterViewInit {
     @Input("ngx-app-menu-context") data: any;
 
     /**
-     *
+     * Configuration for opening the app menu
      */
-    @Input("ngx-app-menu-config") config: Partial<{
-        position: "top" | "right" | "bottom" | "left",
-        alignment:  "center" | "beforestart" | "start" | "end" | "afterend",
-        showArrow: boolean,
-        arrowSize: number,
-        edgePadding: number
-    }>;
+    @Input("ngx-app-menu-config") config: NgxAppMenuOptions;
 
     constructor(
         private dialog: MatDialog,
@@ -39,7 +66,11 @@ export class NgxAppMenuDirective implements AfterViewInit {
 
     ngAfterViewInit() {
         const el = this.viewContainer.element.nativeElement as HTMLElement;
-        el.onclick = this.onClick.bind(this);
+        const triggers = Array.isArray(this.config.trigger) ? this.config.trigger : [this.config.trigger];
+
+        triggers.forEach(t => {
+            el.addEventListener(t, this.openDialog.bind(this));
+        });
     }
 
     getPosition() {
@@ -162,7 +193,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
     }
 
     // Needs to be public so we can manually open the dialog
-    private onClick(evt: MouseEvent) {
+    private openDialog(evt: MouseEvent) {
         const cords = this.getPosition();
 
         // Create the context menu
