@@ -5,8 +5,6 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "prepublish": "cd src; npm version patch --force; git add ./package.json; git commit -m \"Increment version\"; cd ..; npm run build",
-    "publish": "cd dist && npm publish && cd ..",
     "dev": "ng build --watch --configuration development",
     "test": "ng test"
   },
