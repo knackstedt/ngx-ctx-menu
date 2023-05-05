@@ -240,7 +240,7 @@ export class ContextMenuComponent implements OnInit {
     @HostListener("window:resize")
     private afterOpened() {
         const el = this.viewContainer?.element?.nativeElement as HTMLElement;
-        if (el) return;
+        if (!el) return;
 
         const { width, height, x, y } = el.getBoundingClientRect();
 
@@ -253,6 +253,7 @@ export class ContextMenuComponent implements OnInit {
             target.style['margin-top'] = newTop;
 
         }
+
         // Move back into view if we're clipping off the right
         if (x + width > window.innerWidth) {
             const newLeft = (window.innerWidth - (width + (this.config.edgePadding || 12))) + "px"
