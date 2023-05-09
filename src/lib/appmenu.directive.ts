@@ -79,10 +79,10 @@ export class NgxAppMenuDirective implements AfterViewInit {
         }
     }
 
-    getPosition() {
+    async getPosition() {
         const src = (this.viewContainer.element.nativeElement as HTMLElement).getBoundingClientRect();
 
-        const { width, height } = calcMenuItemBounds(this.menuItems);
+        const { width, height } = await calcMenuItemBounds(this.menuItems);
 
         const winh = window.innerHeight;
         const winw = window.innerWidth;
@@ -199,8 +199,8 @@ export class NgxAppMenuDirective implements AfterViewInit {
     }
 
     // Needs to be public so we can manually open the dialog
-    private openDialog(evt: MouseEvent) {
-        const cords = this.getPosition();
+    private async openDialog(evt: MouseEvent) {
+        const cords = await this.getPosition();
 
         const specificId = crypto.randomUUID();
 

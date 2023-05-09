@@ -32,11 +32,11 @@ export class NgxContextMenuDirective {
 
     // Needs to be public so we can manually open the dialog
     @HostListener('contextmenu', ['$event'])
-    public onContextMenu(evt: MouseEvent) {
+    public async onContextMenu(evt: MouseEvent) {
         evt.preventDefault();
         evt.stopPropagation();
 
-        const { width, height } = calcMenuItemBounds(this.menuItems);
+        const { width, height } = await calcMenuItemBounds(this.menuItems);
 
         const cords = {
             top: null,
@@ -70,7 +70,6 @@ export class NgxContextMenuDirective {
                 items: this.menuItems,
                 config: this.config,
                 id: specificId
-
             },
             panelClass: ["ngx-app-menu", 'ngx-' + specificId],
             position: cords,

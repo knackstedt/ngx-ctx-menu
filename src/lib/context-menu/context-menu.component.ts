@@ -1,58 +1,38 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, Injector, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { BaseCtx, ContextMenuItem } from '../types';
+import { ContextMenuItem } from '../types';
 import { NgxAppMenuOptions } from '../appmenu.directive';
+import { Optional } from '@angular/core';
+import { createApplication } from '@angular/platform-browser';
 
-export const calcMenuItemBounds = (menuItems: ContextMenuItem[]) => {
-    const calcHeight = () => {
-        return menuItems
-            .map(i => typeof i == "string" ? 2 : 24)
-            .reduce((a, b) => a + b, 0);
+export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
+    const data = {
+        data: null,
+        items: menuItems,
+        config: {},
+        id: null
     }
 
-    const calcWidth = () => {
+    const del = document.createElement("div");
+    del.style.position = "absolute";
+    del.style.left = '-1000vw';
+    document.body.append(del);
 
-        const items = menuItems
-            .filter(i => i != "separator" && !i.separator) as BaseCtx[];
+    // Forcibly bootstrap the ctx menu outside of the client application's zone.
+    const app = await createApplication({
+        providers: [
+            { provide: MAT_DIALOG_DATA, useValue: data }
+        ]
+    });
 
-        // TODO: this is probably not right.
-        const lName = items
-            .filter(e => typeof e != 'string')
-            .sort((a, b) => a.label.length - b.label.length)
-            .filter(e => e)
-            .pop().label;
-        const lShort = items
-            .filter(e => typeof e != 'string')
-            .sort((a, b) => a.shortcutLabel?.length - b.shortcutLabel?.length)
-            .filter(e => e)
-            .pop().shortcutLabel;
-
-        // Create dummy div that will calculate the width for us.
-        const div = document.createElement("div");
-        div.style["font-size"] = "14px";
-        div.style["position"] = "absolute";
-        div.style["opacity"] = "0";
-        div.style["pointer-events"] = "none";
-        div.style["left"] = "-1000vw"; // The div gets to exist in narnia
-
-        div.innerText = lName + lShort;
-
-        document.body.appendChild(div);
-
-        // Get width
-        const w = div.getBoundingClientRect().width;
-
-        // Clear element out of DOM
-        div.remove();
-        return w;
-    }
-
-    return {
-        width: calcWidth(),
-        height: calcHeight()
-    }
+    const component = app.bootstrap(ContextMenuComponent, del);
+    const el: HTMLElement = component.instance.viewContainer?.element?.nativeElement;
+    const rect = el.getBoundingClientRect();
+    app.destroy();
+    del.remove();
+    return rect;
 }
 
 @Component({
@@ -96,10 +76,10 @@ export class ContextMenuComponent implements OnInit {
     public readonly matIconRx = /[^a-z_\-]/i;
 
     constructor(
-        private viewContainer: ViewContainerRef,
-        public dialog: MatDialog,
-        public dialogRef: MatDialogRef<any>,
-        @Inject(MAT_DIALOG_DATA) private _data: any
+        public viewContainer: ViewContainerRef,
+        @Optional() public dialog: MatDialog,
+        @Optional() public dialogRef: MatDialogRef<any>,
+        @Optional() @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
         // Defaults are set before @Input() hooks evaluate
         this.data  = this._data.data;
@@ -114,20 +94,14 @@ export class ContextMenuComponent implements OnInit {
             if (i.separator == true) return;
 
             if (i.label)
-                i['_formattedLabel'] = this.formatLabel(i.label);
+                try { i['_formattedLabel'] = this.formatLabel(i.label); } catch (e) { console.warn(e) }
 
             if (typeof i.isDisabled == "function")
-                i['_disabled'] = i.isDisabled(this.data);
+                try { i['_disabled'] = i.isDisabled(this.data); } catch(e) { console.warn(e) }
 
             if (typeof i.isVisible == "function")
-                i['_visible'] = i.isVisible(this.data);
+                try { i['_visible'] = i.isVisible(this.data); } catch (e) { console.warn(e) }
         })
-
-        // Try to make absolutely certain that this component isn't clipping off of the screen.
-        // Check every 100ms if the dialog is clipping
-        this.afterOpened();
-        for (let i = 100; i < 5000; i += 100)
-            setTimeout(this.afterOpened.bind(this), i);
     }
 
     /**
@@ -181,7 +155,7 @@ export class ContextMenuComponent implements OnInit {
             if (!cords.left) cords.left = bounds.x + bounds.width + "px";
         }
         else if (item.children) {
-            const {width, height} = calcMenuItemBounds(item.children);
+            const { width, height } = await calcMenuItemBounds(item.children);
 
             if (bounds.y + height > window.innerHeight)
                 cords.bottom = "0px";
@@ -235,7 +209,8 @@ export class ContextMenuComponent implements OnInit {
     }
 
     /**
-     * Check if the dialog is clipping, and if so, move it back into view.
+     * Check if the dialog is clipping offscreen
+     * if so, move it back into view.
      */
     @HostListener("window:resize")
     private afterOpened() {
@@ -251,7 +226,6 @@ export class ContextMenuComponent implements OnInit {
         if (y + height > window.innerHeight) {
             const newTop = (window.innerHeight - (height + (this.config.edgePadding || 12))) + "px";
             target.style['margin-top'] = newTop;
-
         }
 
         // Move back into view if we're clipping off the right
