@@ -5,7 +5,11 @@ export type BaseCtx<T = any> = {
      * Label for the menu-item
      */
     label?: string,
-    labelTemplate?: TemplateRef<any>,
+    /**
+     * Custom angular template to use for the label
+     * Alternatively accepts a lambda function
+     */
+    labelTemplate?: TemplateRef<any> | ((data: T) => string),
 
     /**
      * Callback method that is called when a user activates
