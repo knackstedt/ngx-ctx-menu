@@ -23,7 +23,7 @@
                         <ng-container *ngIf="$any(item.labelTemplate).prototype" [ngTemplateOutlet]="$any(item).labelTemplate" [ngTemplateOutletContext]="data">
                         </ng-container>
                         <ng-container>
-                            {{$any(item)?.labelTemplate(data)}}
+                            {{$any(item)?.labelTemplate(data || {})}}
                         </ng-container>
                     </td>
 
