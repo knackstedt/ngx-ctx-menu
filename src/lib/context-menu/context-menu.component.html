@@ -5,7 +5,7 @@
 
                 <!-- A row with a click action -->
                 <tr #row
-                    *ngIf="item != 'separator' && item.separator != true && !item['_visible']"
+                    *ngIf="item != 'separator' && item.separator != true && item['_visible']"
                     [class.disabled]="item['_disabled']"
                     (click)="!item['_disabled'] && onMenuItemClick(item, row, $event)"
                     [class.hover]="item['children'] && row['hover']"

@@ -90,6 +90,10 @@ export class ContextMenuComponent implements OnInit {
 
     ngOnInit() {
         this.items.forEach(i => {
+            // Set defaults
+            i['_disabled'] = false;
+            i['_visible'] = true;
+
             if (typeof i == "string") return;
             if (i.separator == true) return;
 

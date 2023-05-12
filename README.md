@@ -356,10 +356,10 @@ Debugging
 
 Roadmap
 =====
- [x] - Basic menu template support
- [ ] - Support for better styling
- [ ] - Support for templates without relying on `@ViewChild`
- [ ] - Add more trigger events for app menu
- [ ] - Better ARIA support and configuration
- [ ] - Support dynamic entries
- [ ] - Enable sharing menus and combining menu chunks
+  - [*] Basic menu template support
+  - [ ] Support for better styling
+  - [ ] Support for templates without relying on `@ViewChild`
+  - [ ] Add more trigger events for app menu
+  - [ ] Better ARIA support and configuration
+  - [ ] Support dynamic entries
+  - [ ] Enable sharing menus and combining menu chunks
