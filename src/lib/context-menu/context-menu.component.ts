@@ -97,10 +97,10 @@ export class ContextMenuComponent implements OnInit {
                 try { i['_formattedLabel'] = this.formatLabel(i.label); } catch (e) { console.warn(e) }
 
             if (typeof i.isDisabled == "function")
-                try { i['_disabled'] = i.isDisabled(this.data); } catch(e) { console.warn(e) }
+                try { i['_disabled'] = i.isDisabled(this.data || {}); } catch(e) { console.warn(e) }
 
             if (typeof i.isVisible == "function")
-                try { i['_visible'] = i.isVisible(this.data); } catch (e) { console.warn(e) }
+                try { i['_visible'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
         })
     }
 
