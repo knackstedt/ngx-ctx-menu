@@ -23,6 +23,7 @@
 
 :host {
     user-select: none;
+    background: var(--ngx-ctx-menu-background-color, #333)
 }
 
 table {

@@ -1,11 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ContextMenuItem } from '../types';
 import { NgxAppMenuOptions } from '../appmenu.directive';
 import { Optional } from '@angular/core';
-import { createApplication } from '@angular/platform-browser';
+import { BrowserModule, createApplication } from '@angular/platform-browser';
+import { Overlay } from '@angular/cdk/overlay';
+// import { DIALOG_DATA, DIALOG_SCROLL_STRATEGY_PROVIDER, Dialog, DialogRef } from '@angular/cdk/dialog';
 
 export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
     const data = {
@@ -37,7 +39,7 @@ export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
 
 @Component({
     selector: 'ngx-ctx-menu-template-container',
-    template: `<ng-template *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />`,
+    template: `<ng-container *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />`,
     imports: [ CommonModule ],
     standalone: true
 })
@@ -60,7 +62,9 @@ class TemplateWrapper {
     templateUrl: './context-menu.component.html',
     styleUrls: ['./context-menu.component.scss'],
     imports: [
-        CommonModule,
+        NgIf,
+        NgForOf,
+        NgTemplateOutlet,
         MatIconModule
     ],
     standalone: true
@@ -77,25 +81,25 @@ export class ContextMenuComponent implements OnInit {
 
     constructor(
         public viewContainer: ViewContainerRef,
-        @Optional() public dialog: MatDialog,
+        @Optional() @Inject(MAT_DIALOG_DATA) private _data: any,
+        @Optional() public dialog: MatDialog, // optional only for the purpose of estimating dimensions
         @Optional() public dialogRef: MatDialogRef<any>,
-        @Optional() @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
         // Defaults are set before @Input() hooks evaluate
-        this.data  = this._data.data;
-        this.items = this._data.items;
-        this.config = this._data.config;
-        this.id = this._data.id;
+        this.data  = this._data?.data;
+        this.items = this._data?.items;
+        this.config = this._data?.config;
+        this.id = this._data?.id;
     }
 
     ngOnInit() {
-        this.items.forEach(i => {
+        this.items?.forEach(i => {
+            if (typeof i == "string") return;
+            if (i.separator == true) return;
+
             // Set defaults
             i['_disabled'] = false;
             i['_visible'] = true;
-
-            if (typeof i == "string") return;
-            if (i.separator == true) return;
 
             if (i.label)
                 try { i['_formattedLabel'] = this.formatLabel(i.label); } catch (e) { console.warn(e) }
@@ -131,7 +135,7 @@ export class ContextMenuComponent implements OnInit {
             if (item.action)
                 item.action(this.data);
 
-            this.dialogRef.close(true);
+            this.close();
             return;
         }
 
@@ -182,13 +186,13 @@ export class ContextMenuComponent implements OnInit {
                 template: item.childTemplate
             }
         })
-            .afterClosed()
+        .afterClosed()
             .subscribe((result) => {
                 if (result) {
                     if (item.action)
                         item.action(result);
-                    this.dialogRef.close(true);
                 }
+                this.close();
 
                 _s.unsubscribe();
             });
@@ -209,7 +213,10 @@ export class ContextMenuComponent implements OnInit {
     // @HostListener("window:resize", ['event'])
     // @HostListener("window:blur", ['event'])
     close() {
-        this.dialogRef.close();
+        this.closeSignal.emit();
+
+        if (this.dialogRef)
+            this.dialogRef.close();
     }
 
     /**

@@ -1,12 +1,15 @@
 import { Directive, Input, HostListener, TemplateRef } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER } from '@angular/material/dialog';
 import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context-menu.component';
 import { ContextMenuItem } from './types';
 import { NgxAppMenuOptions } from './appmenu.directive';
-
+import { createApplication } from '@angular/platform-browser';
 
 @Directive({
     selector: '[ngx-ctx-menu]',
+    providers: [
+        MatDialog
+    ],
     standalone: true
 })
 export class NgxContextMenuDirective {
@@ -32,58 +35,44 @@ export class NgxContextMenuDirective {
 
     // Needs to be public so we can manually open the dialog
     @HostListener('contextmenu', ['$event'])
-    public async onContextMenu(evt: MouseEvent) {
-        evt.preventDefault();
-        evt.stopPropagation();
-
-        const { width, height } = await calcMenuItemBounds(this.menuItems);
-
-        const cords = {
-            top: null,
-            left: null,
-            bottom: null,
-            right: null
-        };
-
-        if (evt.clientY + height > window.innerHeight)
-            cords.bottom = (window.innerHeight - evt.clientY) + "px";
-        if (evt.clientX + width > window.innerWidth)
-            cords.right = (window.innerWidth - evt.clientX) + "px";
-
-        if (!cords.bottom) cords.top = evt.clientY + "px";
-        if (!cords.right) cords.left = evt.clientX + "px";
-
-        // let items = [];
-        // this.menuItems.forEach((item: ContextMenuItem) => {
-        //     items.push(typeof item == "string" ? item : {
-        //         ...item,
-        //         active: typeof item.canActivate == "function" ? item.canActivate(this.data) : true
-        //     });
-        // });
-
-        const specificId = crypto.randomUUID();
-
-        // Create the context menu
-        this.dialog.open(ContextMenuComponent, {
-            data: {
-                data: this.data,
-                items: this.menuItems,
-                config: this.config,
-                id: specificId
-            },
-            panelClass: ["ngx-app-menu", 'ngx-' + specificId],
-            position: cords,
-            backdropClass: "ngx-ctx-menu-backdrop"
-        });
+    public async onContextMenu(evt: PointerEvent) {
+        openContextMenu(this.dialog, this.menuItems, this.data, evt, this.config);
     }
 }
 
 // Helper to open the context menu without using the directive.
-export const openContextMenu = (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent) => {
-    const ctx = new NgxContextMenuDirective(dialog);
-    ctx.data = data;
-    ctx.menuItems = menuItems;
-    ctx.onContextMenu(evt);
+export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent, config?: NgxAppMenuOptions) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    const { width, height } = await calcMenuItemBounds(menuItems);
 
-    // TODO: is this disposed properly?
+    const cords = {
+        top: null,
+        left: null,
+        bottom: null,
+        right: null
+    };
+
+    if (evt.clientY + height > window.innerHeight)
+        cords.bottom = (window.innerHeight - evt.clientY) + "px";
+    if (evt.clientX + width > window.innerWidth)
+        cords.right = (window.innerWidth - evt.clientX) + "px";
+
+    if (!cords.bottom) cords.top = evt.clientY + "px";
+    if (!cords.right) cords.left = evt.clientX + "px";
+
+    const specificId = crypto.randomUUID();
+
+
+    dialog.open(ContextMenuComponent, {
+        data: {
+            data: data,
+            items: menuItems,
+            config: config,
+            id: specificId
+        },
+        panelClass: ["ngx-app-menu", 'ngx-' + specificId],
+        position: cords,
+        backdropClass: "ngx-ctx-menu-backdrop"
+    });
 };
