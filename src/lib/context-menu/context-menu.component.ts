@@ -1,13 +1,13 @@
 import { CommonModule, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, ViewContainerRef } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER } from '@angular/material/dialog';
+import { createApplication } from '@angular/platform-browser';
+import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
+import { Optional } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { ContextMenuItem } from '../types';
 import { NgxAppMenuOptions } from '../appmenu.directive';
-import { Optional } from '@angular/core';
-import { BrowserModule, createApplication } from '@angular/platform-browser';
-import { Overlay } from '@angular/cdk/overlay';
-// import { DIALOG_DATA, DIALOG_SCROLL_STRATEGY_PROVIDER, Dialog, DialogRef } from '@angular/cdk/dialog';
 
 export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
     const data = {
@@ -17,11 +17,10 @@ export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
         id: null
     }
 
-    const del = document.createElement("div");
-    del.style.position = "absolute";
-    del.style.left = '-1000vw';
-    document.body.append(del);
+    return calcComponentBounds(ContextMenuComponent, data);
+}
 
+const calcComponentBounds = async (component: Type<any>, data: any) => {
     // Forcibly bootstrap the ctx menu outside of the client application's zone.
     const app = await createApplication({
         providers: [
@@ -29,8 +28,13 @@ export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
         ]
     });
 
-    const component = app.bootstrap(ContextMenuComponent, del);
-    const el: HTMLElement = component.instance.viewContainer?.element?.nativeElement;
+    const del = document.createElement("div");
+    del.style.position = "absolute";
+    del.style.left = '-1000vw';
+    document.body.append(del);
+
+    const { instance } = app.bootstrap(component, del);
+    const el: HTMLElement = instance.viewContainer?.element?.nativeElement;
     const rect = el.getBoundingClientRect();
     app.destroy();
     del.remove();
@@ -65,7 +69,8 @@ class TemplateWrapper {
         NgIf,
         NgForOf,
         NgTemplateOutlet,
-        MatIconModule
+        MatIconModule,
+        MatProgressSpinnerModule
     ],
     standalone: true
 })
@@ -151,16 +156,8 @@ export class ContextMenuComponent implements OnInit {
 
         // Set position coordinates
         if (item.childTemplate) {
-            const width = item.childWidth || 300;
-            const height = item.childHeight || 500;
-
-            if (bounds.y + height > window.innerHeight)
-                cords.bottom = "0px";
-            if (bounds.x + width > window.innerWidth)
-                cords.left = ((bounds.x - width)) + "px";
-
-            if (!cords.bottom) cords.top = bounds.y + "px";
-            if (!cords.left) cords.left = bounds.x + bounds.width + "px";
+            cords.top = bounds.y + "px";
+            cords.left = bounds.x + bounds.width + "px";
         }
         else if (item.children) {
             const { width, height } = await calcMenuItemBounds(item.children);
@@ -188,10 +185,8 @@ export class ContextMenuComponent implements OnInit {
         })
         .afterClosed()
             .subscribe((result) => {
-                if (result) {
-                    if (item.action)
-                        item.action(result);
-                }
+                if (result && typeof item.action == 'function')
+                    item.action(result);
                 this.close();
 
                 _s.unsubscribe();
@@ -224,7 +219,7 @@ export class ContextMenuComponent implements OnInit {
      * if so, move it back into view.
      */
     @HostListener("window:resize")
-    private afterOpened() {
+    private onResize() {
         const el = this.viewContainer?.element?.nativeElement as HTMLElement;
         if (!el) return;
 
