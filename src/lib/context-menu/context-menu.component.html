@@ -31,7 +31,8 @@
                         {{item.shortcutLabel}}
                     </td>
                     <td>
-                        <mat-icon *ngIf="item.children || item.childTemplate">chevron_right</mat-icon>
+                        <mat-icon *ngIf="item.children || item.childTemplate || (item.childrenResolver && !item['_isResolving'])">chevron_right</mat-icon>
+                        <mat-progress-spinner *ngIf="item['_isResolving']" mode="indeterminate" [diameter]="20" style="margin-right: 4px"/>
                     </td>
                 </tr>
 
