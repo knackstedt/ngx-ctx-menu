@@ -71,7 +71,7 @@ export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuI
             config: config,
             id: specificId
         },
-        panelClass: ["ngx-app-menu", 'ngx-' + specificId],
+        panelClass: ["ngx-app-menu", 'ngx-' + specificId].concat(config?.customClass || []),
         position: cords,
         backdropClass: "ngx-ctx-menu-backdrop"
     });

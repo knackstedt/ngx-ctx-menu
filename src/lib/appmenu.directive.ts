@@ -9,17 +9,17 @@ export type NgxAppMenuTriggers = "click" | "dblclick" | "hover" | "contextmenu";
 
 export type NgxAppMenuOptions = Partial<{
     /**
-     * Position relative to the element the menu pops-up at
+     * Position relative to the element the menu pops-up at.
      */
     position: "top" | "right" | "bottom" | "left",
     /**
-     * How the popup is aligned relative to the element
+     * How the popup is aligned relative to the element.
      */
     alignment: "center" | "beforestart" | "start" | "end" | "afterend",
     /**
      * @hidden
      * WIP:
-     * Show an error from the dialog pointing to the element
+     * Show an error from the dialog pointing to the element.
      */
     showArrow: boolean,
     /**
@@ -33,9 +33,13 @@ export type NgxAppMenuOptions = Partial<{
      */
     edgePadding: number,
     /**
-     * Which event should trigger the app menu
+     * Which event should trigger the app menu.
      */
     trigger: NgxAppMenuTriggers | NgxAppMenuTriggers[];
+    /**
+     * A list of custom classes to add to the dialog popups.
+     */
+    customClass: string[]
 }>;
 
 @Directive({
@@ -213,7 +217,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
                 config: this.config,
                 id: specificId
             },
-            panelClass: ["ngx-app-menu", 'ngx-' + specificId],
+            panelClass: ["ngx-app-menu", 'ngx-' + specificId].concat(this.config?.customClass || []),
             position: cords,
             backdropClass: "ngx-app-menu-backdrop"
         });
