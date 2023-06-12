@@ -19,6 +19,17 @@ export type BaseCtx<T = any> = {
     action?: (data: T) => any,
 
     /**
+     * Instead of an action, this item can be a hyperlink pointing to this URL
+     * www.example.com/foo/bar.zip
+     */
+    link?: string,
+    /**
+     * When having a configured `link` property, this specifies the `target`
+     * attribute applied to the link
+     */
+    linkTarget?: "_blank" | "_self" | "_parent" | "_top", // "framename"
+
+    /**
      * Callback method that is called upon a context menu activation
      * that when it returns true, will show the item as disabled.
      */

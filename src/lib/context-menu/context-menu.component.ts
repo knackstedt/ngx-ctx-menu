@@ -1,5 +1,5 @@
 import { CommonModule, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
-import { createApplication } from '@angular/platform-browser';
+import { DomSanitizer, createApplication } from '@angular/platform-browser';
 import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { Optional } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -83,9 +83,12 @@ export class ContextMenuComponent implements OnInit {
     @Output() closeSignal = new EventEmitter();
 
     public readonly matIconRx = /[^a-z_\-]/i;
+    showIconColumn = true;
+    showShortcutColumn = true;
 
     constructor(
         public viewContainer: ViewContainerRef,
+        public sanitizer: DomSanitizer,
         @Optional() @Inject(MAT_DIALOG_DATA) private _data: any,
         @Optional() public dialog: MatDialog, // optional only for the purpose of estimating dimensions
         @Optional() public dialogRef: MatDialogRef<any>,
@@ -114,7 +117,20 @@ export class ContextMenuComponent implements OnInit {
 
             if (typeof i.isVisible == "function")
                 try { i['_visible'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
-        })
+        });
+
+        // Show the icon column if there are any items with an icon
+        this.showIconColumn = !!this.items.find(i =>
+                typeof i == "object" &&
+                typeof i['icon'] == "string" &&
+                i['icon'].length > 2
+            );
+
+        this.showShortcutColumn = !!this.items.find(i =>
+                typeof i == "object" &&
+                typeof i['shortcut'] == "string" &&
+                i['shortcut'].length > 2
+            );
     }
 
     /**
