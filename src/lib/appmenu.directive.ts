@@ -5,7 +5,7 @@ import { ContextMenuItem } from './types';
 
 const arrowPadding = 8;
 
-export type NgxAppMenuTriggers = "click" | "dblclick" | "hover";
+export type NgxAppMenuTriggers = "click" | "dblclick" | "hover" | "contextmenu";
 
 export type NgxAppMenuOptions = Partial<{
     /**
