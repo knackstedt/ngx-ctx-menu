@@ -204,12 +204,16 @@ export class NgxAppMenuDirective implements AfterViewInit {
 
     // Needs to be public so we can manually open the dialog
     private async openDialog(evt: MouseEvent) {
+        const el = this.viewContainer.element.nativeElement as HTMLElement;
+
         const cords = await this.getPosition();
 
         const specificId = crypto.randomUUID();
 
+        el.classList.add("ngx-app-menu-open");
+
         // Create the context menu
-        this.dialog.open(ContextMenuComponent, {
+        let _s = this.dialog.open(ContextMenuComponent, {
             data: {
                 data: this.data,
                 items: this.menuItems,
@@ -220,6 +224,12 @@ export class NgxAppMenuDirective implements AfterViewInit {
             panelClass: ["ngx-app-menu", 'ngx-' + specificId].concat(this.config?.customClass || []),
             position: cords,
             backdropClass: "ngx-app-menu-backdrop"
-        });
+        })
+        .afterClosed() // What a stupid thing to make an observable.
+        .subscribe(() => {
+            _s.unsubscribe();
+
+            el.classList.remove("ngx-app-menu-open");
+        })
     }
 }
