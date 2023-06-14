@@ -117,6 +117,9 @@ export class ContextMenuComponent implements OnInit {
 
             if (typeof i.isVisible == "function")
                 try { i['_visible'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
+
+            if (typeof i.linkTemplate == "function")
+                try { i['_link'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
         });
 
         // Show the icon column if there are any items with an icon
@@ -191,12 +194,13 @@ export class ContextMenuComponent implements OnInit {
 
         let _s = this.dialog.open(component, {
             position: cords,
-            panelClass: "ngx-ctx-menu",
+            panelClass: ["ngx-ctx-menu", "ngx-app-menu"].concat(this.config?.customClass || []),
             backdropClass: "ngx-ctx-menu-backdrop",
             data: {
                 data: this.data,
                 items: item.children,
-                template: item.childTemplate
+                template: item.childTemplate,
+                config: this.config
             }
         })
         .afterClosed()

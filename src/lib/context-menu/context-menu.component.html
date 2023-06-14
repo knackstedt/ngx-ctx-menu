@@ -22,16 +22,16 @@
                     <!-- Hyperlink item -->
                     <ng-container *ngIf="item.link">
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label">
-                            <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item.link)">
+                            <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)">
                                 <span [innerHTML]="item['_formattedLabel']"></span>
-                                <mat-icon *ngIf="item.linkTarget == '_blank'">launch</mat-icon>
+                                <mat-icon *ngIf="item.linkTarget == '_blank'" class="external-link">launch</mat-icon>
                             </a>
                         </td>
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.labelTemplate">
                             <ng-container>
-                                <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item.link)">
+                                <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)">
                                     {{$any(item)?.labelTemplate(data || {})}}
-                                    <mat-icon *ngIf="item.linkTarget == '_blank'">launch</mat-icon>
+                                    <mat-icon *ngIf="item.linkTarget == '_blank'" class="external-link">launch</mat-icon>
                                 </a>
                             </ng-container>
                         </td>
@@ -43,9 +43,7 @@
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.labelTemplate">
                             <ng-container *ngIf="$any(item.labelTemplate).prototype" [ngTemplateOutlet]="$any(item).labelTemplate" [ngTemplateOutletContext]="data">
                             </ng-container>
-                            <ng-container>
-                                {{$any(item)?.labelTemplate(data || {})}}
-                            </ng-container>
+                            <ng-container>{{$any(item)?.labelTemplate(data || {})}}</ng-container>
                         </td>
                     </ng-container>
 

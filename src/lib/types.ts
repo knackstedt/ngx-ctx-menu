@@ -5,6 +5,7 @@ export type BaseCtx<T = any> = {
      * Label for the menu-item
      */
     label?: string,
+
     /**
      * Custom angular template to use for the label
      * Alternatively accepts a lambda function
@@ -23,11 +24,18 @@ export type BaseCtx<T = any> = {
      * www.example.com/foo/bar.zip
      */
     link?: string,
+
     /**
      * When having a configured `link` property, this specifies the `target`
      * attribute applied to the link
      */
     linkTarget?: "_blank" | "_self" | "_parent" | "_top", // "framename"
+
+    /**
+     * Custom template function for resolving a link when the context menu
+     * is opened
+     */
+    linkTemplate?: ((data: T) => string),
 
     /**
      * Callback method that is called upon a context menu activation
@@ -90,6 +98,8 @@ export type BaseCtx<T = any> = {
     childHeight?: number,
 
     /**
+     * This item is a separator.
+     * Can be used with label to make a label separator.
      */
     separator?: false
 };
