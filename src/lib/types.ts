@@ -60,7 +60,9 @@ export type BaseCtx<T = any> = {
     // shortcut?: KeyCommand,
 
     /**
-     * Path to an icon to render on the left side of the item.
+     * Icon to render on the left side of the item.
+     * Can be a URL/URI (must include extension)
+     * Or can be a material icon identifier.
      */
     icon?: string,
 
