@@ -1,4 +1,4 @@
-import { Directive, Input, HostListener, TemplateRef } from '@angular/core';
+import { Directive, Input, HostListener, TemplateRef, ViewContainerRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER } from '@angular/material/dialog';
 import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context-menu.component';
 import { ContextMenuItem } from './types';
@@ -30,13 +30,21 @@ export class NgxContextMenuDirective {
     @Input("ngx-ctx-menu-config") config: NgxAppMenuOptions = {};
 
     constructor(
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private viewContainer: ViewContainerRef
     ) { }
 
     // Needs to be public so we can manually open the dialog
     @HostListener('contextmenu', ['$event'])
     public async onContextMenu(evt: PointerEvent) {
-        openContextMenu(this.dialog, this.menuItems, this.data, evt, this.config);
+        const el = this.viewContainer.element.nativeElement as HTMLElement;
+
+        el.classList.add("ngx-app-menu-open");
+
+        return openContextMenu(this.dialog, this.menuItems, this.data, evt, this.config)
+            .finally(() => {
+                el.classList.remove("ngx-app-menu-open");
+            });
     }
 }
 
@@ -44,6 +52,7 @@ export class NgxContextMenuDirective {
 export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent, config?: NgxAppMenuOptions) => {
     evt.preventDefault();
     evt.stopPropagation();
+
     const { width, height } = await calcMenuItemBounds(menuItems);
 
     const cords = {
@@ -64,15 +73,21 @@ export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuI
     const specificId = crypto.randomUUID();
 
 
-    dialog.open(ContextMenuComponent, {
-        data: {
-            data: data,
-            items: menuItems,
-            config: config,
-            id: specificId
-        },
-        panelClass: ["ngx-app-menu", 'ngx-' + specificId].concat(config?.customClass || []),
-        position: cords,
-        backdropClass: "ngx-ctx-menu-backdrop"
-    });
+    return new Promise(res => {
+        dialog.open(ContextMenuComponent, {
+            data: {
+                data: data,
+                items: menuItems,
+                config: config,
+                id: specificId
+            },
+            panelClass: ["ngx-ctx-menu", 'ngx-' + specificId].concat(config?.customClass || []),
+            position: cords,
+            backdropClass: "ngx-ctx-menu-backdrop"
+        })
+        .afterClosed()
+        .subscribe(s => {
+            res(s);
+        })
+    }) as Promise<any>;
 };
