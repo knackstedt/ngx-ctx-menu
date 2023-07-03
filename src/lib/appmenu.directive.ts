@@ -78,7 +78,15 @@ export class NgxAppMenuDirective implements AfterViewInit {
             const triggers = Array.isArray(this.config.trigger) ? this.config.trigger : [this.config.trigger];
 
             triggers.forEach(t => {
-                el.addEventListener(t, this.openDialog.bind(this));
+                if (t == "contextmenu") {
+                    el.addEventListener(t, (e) => {
+                        e.preventDefault();
+                        this.openDialog(e);
+                    });
+                }
+                else {
+                    el.addEventListener(t, this.openDialog.bind(this));
+                }
             });
         }
     }
