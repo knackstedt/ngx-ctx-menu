@@ -1,4 +1,4 @@
-import { TemplateRef } from '@angular/core';
+import { TemplateRef, Type } from '@angular/core';
 
 export type BaseCtx<T = any> = {
     /**
@@ -87,7 +87,7 @@ export type BaseCtx<T = any> = {
     /**
      * Instead of an array of children, render a template
      */
-    childTemplate?: TemplateRef<T>,
+    childTemplate?: TemplateRef<T> | Type<any>,
 
     /**
      * Width of child component

@@ -1,13 +1,13 @@
 import { CommonModule, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Optional, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { DomSanitizer, createApplication } from '@angular/platform-browser';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
-import { Optional } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ContextMenuItem } from '../types';
 import { NgxAppMenuOptions } from '../appmenu.directive';
+import { ComponentPortal, PortalModule } from '@angular/cdk/portal';
 
 export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
     const data = {
@@ -43,8 +43,13 @@ const calcComponentBounds = async (component: Type<any>, data: any) => {
 
 @Component({
     selector: 'ngx-ctx-menu-template-container',
-    template: `<ng-container *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />`,
-    imports: [ CommonModule ],
+    template: `
+    <ng-container *ngIf="templateType == 'template'; else portalOutlet">
+        <ng-container *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />
+    </ng-container>
+    <ng-template #portalOutlet [cdkPortalOutlet]="componentPortal"></ng-template>
+`,
+    imports: [ NgTemplateOutlet, PortalModule, NgIf ],
     standalone: true
 })
 class TemplateWrapper {
@@ -52,12 +57,22 @@ class TemplateWrapper {
     data: Object;
     template: TemplateRef<any>;
 
+    templateType: "template" | "component"
+    componentPortal: ComponentPortal<any>;
+
     constructor(
         public dialogRef: MatDialogRef<any>,
         @Inject(MAT_DIALOG_DATA) private _data: any
     ) {
         this.data = _data.data;
         this.template = _data.template;
+
+        // TODO: This is probably invalid
+        this.templateType = this.template instanceof TemplateRef ? "template" : "component";
+
+        if (this.templateType == "component") {
+            this.componentPortal = new ComponentPortal(this.template as any);
+        }
     }
 }
 
