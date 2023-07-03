@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ContextMenuItem } from '../types';
 import { NgxAppMenuOptions } from '../appmenu.directive';
 import { ComponentPortal, PortalModule } from '@angular/cdk/portal';
+import { firstValueFrom } from 'rxjs';
 
 export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
     const data = {
@@ -33,11 +34,18 @@ const calcComponentBounds = async (component: Type<any>, data: any) => {
     del.style.left = '-1000vw';
     document.body.append(del);
 
-    const { instance } = app.bootstrap(component, del);
+    const base = app.bootstrap(component, del);
+    const { instance } = base;
+
+    await firstValueFrom(app.isStable);
+
     const el: HTMLElement = instance.viewContainer?.element?.nativeElement;
+
     const rect = el.getBoundingClientRect();
     app.destroy();
     del.remove();
+
+    console.log("Calculated bounds", rect);
     return rect;
 }
 
@@ -61,8 +69,9 @@ class TemplateWrapper {
     componentPortal: ComponentPortal<any>;
 
     constructor(
-        public dialogRef: MatDialogRef<any>,
-        @Inject(MAT_DIALOG_DATA) private _data: any
+        @Optional() public dialogRef: MatDialogRef<any>,
+        @Inject(MAT_DIALOG_DATA) private _data: any,
+        public viewContainer: ViewContainerRef
     ) {
         this.data = _data.data;
         this.template = _data.template;
@@ -189,21 +198,17 @@ export class ContextMenuComponent implements OnInit {
         };
 
         // Set position coordinates
-        if (item.childTemplate) {
-            cords.top = bounds.y + "px";
-            cords.left = bounds.x + bounds.width + "px";
-        }
-        else if (item.children) {
-            const { width, height } = await calcMenuItemBounds(item.children);
+        const { width, height } = await (item.childTemplate
+            ? calcComponentBounds(TemplateWrapper, { template: item.childTemplate })
+            : calcMenuItemBounds(item.children));
 
-            if (bounds.y + height > window.innerHeight)
-                cords.bottom = "0px";
-            if (bounds.x + width > window.innerWidth)
-                cords.left = ((bounds.x - width)) + "px";
+        if (bounds.y + height > window.innerHeight)
+            cords.bottom = "0px";
+        if (bounds.x + bounds.width + width > window.innerWidth)
+            cords.left = ((bounds.x - width)) + "px";
 
-            if (!cords.bottom) cords.top = bounds.y + "px";
-            if (!cords.left) cords.left = bounds.x + bounds.width + "px";
-        }
+        if (!cords.bottom) cords.top = bounds.y + "px";
+        if (!cords.left) cords.left = bounds.x + bounds.width + "px";
 
         const component = item.children ? ContextMenuComponent : TemplateWrapper as any;
 
