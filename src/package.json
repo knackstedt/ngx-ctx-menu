@@ -4,6 +4,7 @@
   "repository": {
     "url": "https://github.com/knackstedt/ngx-ctx-menu"
   },
+  "license": "MIT",
   "author": {
     "email": "andrewk@vivaldi.net",
     "name": "Andrew G. Knackstedt"
