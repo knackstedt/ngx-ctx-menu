@@ -106,7 +106,8 @@ export class ContextMenuComponent implements OnInit {
 
     @Output() closeSignal = new EventEmitter();
 
-    public readonly matIconRx = /[^a-z_\-]/i;
+    // Check if there are any slashes or dots -- that will clearly exclude it from being a mat icon
+    public readonly matIconRx = /[\/\.]/i;
     showIconColumn = true;
     showShortcutColumn = true;
 
