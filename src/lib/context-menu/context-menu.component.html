@@ -39,11 +39,21 @@
 
                     <!-- 'Normal' action based item -->
                     <ng-container *ngIf="!item.link">
-                        <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label" [innerHTML]="item['_formattedLabel']"></td>
+                        <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label">
+                            <div [innerHTML]="item['_formattedLabel']"></div>
+                        </td>
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.labelTemplate">
-                            <ng-container *ngIf="$any(item.labelTemplate).prototype" [ngTemplateOutlet]="$any(item).labelTemplate" [ngTemplateOutletContext]="data">
-                            </ng-container>
-                            <ng-container>{{$any(item)?.labelTemplate(data || {})}}</ng-container>
+                            <a [attr.target]="item.linkTarget" [attr.href]="(item['_link'] || item.link) ? sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link) : undefined">
+                                <ng-container
+                                    *ngIf="$any(item.labelTemplate).prototype"
+                                    [ngTemplateOutlet]="$any(item).labelTemplate"
+                                    [ngTemplateOutletContext]="data"
+                                />
+
+                                <ng-container>
+                                    {{$any(item)?.labelTemplate(data || {})}}
+                                </ng-container>
+                            </a>
                         </td>
                     </ng-container>
 
