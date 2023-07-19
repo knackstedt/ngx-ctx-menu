@@ -20,39 +20,55 @@
                     </td>
 
                     <!-- Hyperlink item -->
-                    <ng-container *ngIf="item.link">
+                    <!-- <ng-container *ngIf="item.link">
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label">
-                            <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)">
+                            <a
+                                [target]="item.linkTarget || '_self'"
+                                [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)"
+                            >
                                 <span [innerHTML]="item['_formattedLabel']"></span>
                                 <mat-icon *ngIf="item.linkTarget == '_blank'" class="external-link">launch</mat-icon>
                             </a>
                         </td>
-                        <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.labelTemplate">
+                        <td
+                            *ngIf="item.labelTemplate"
+                            class="label"
+                            [style.padding-left]="showIconColumn ? 0 : '16px'"
+                        >
                             <ng-container>
-                                <a [target]="item.linkTarget || '_self'" [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)">
+                                <a
+                                    [target]="item.linkTarget || '_self'"
+                                    [href]="sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link)"
+                                >
                                     {{$any(item)?.labelTemplate(data || {})}}
                                     <mat-icon *ngIf="item.linkTarget == '_blank'" class="external-link">launch</mat-icon>
                                 </a>
                             </ng-container>
                         </td>
-                    </ng-container>
+                    </ng-container> -->
 
                     <!-- 'Normal' action based item -->
-                    <ng-container *ngIf="!item.link">
+                    <ng-container>
                         <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label">
                             <div [innerHTML]="item['_formattedLabel']"></div>
                         </td>
-                        <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.labelTemplate">
-                            <a [attr.target]="item.linkTarget" [attr.href]="(item['_link'] || item.link) ? sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link) : undefined">
+                        <td class="label"
+                            *ngIf="item.labelTemplate"
+                            [style.padding-left]="showIconColumn ? 0 : '16px'"
+                        >
+                            <a
+                                [attr.target]="item.linkTarget"
+                                [attr.href]="(item['_link'] || item.link) ? sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link) : undefined"
+                            >
                                 <ng-container
-                                    *ngIf="$any(item.labelTemplate).prototype"
+                                    *ngIf="$any(item.labelTemplate).prototype; else labelTemplate"
                                     [ngTemplateOutlet]="$any(item).labelTemplate"
-                                    [ngTemplateOutletContext]="data"
+                                    [ngTemplateOutletContext]="{ '$implicit': data }"
                                 />
 
-                                <ng-container>
+                                <ng-template #labelTemplate>
                                     {{$any(item)?.labelTemplate(data || {})}}
-                                </ng-container>
+                                </ng-template>
                             </a>
                         </td>
                     </ng-container>

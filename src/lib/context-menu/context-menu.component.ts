@@ -53,9 +53,12 @@ const calcComponentBounds = async (component: Type<any>, data: any) => {
     selector: 'ngx-ctx-menu-template-container',
     template: `
     <ng-container *ngIf="templateType == 'template'; else portalOutlet">
-        <ng-container *ngTemplateOutlet="template; context: {data: {data, dialog: dialogRef }}" />
+        <ng-container
+            [ngTemplateOutlet]="template"
+            [ngTemplateOutletContext]="{ '$implicit': data, dialog: dialogRef }"
+        />
     </ng-container>
-    <ng-template #portalOutlet [cdkPortalOutlet]="componentPortal"></ng-template>
+    <ng-template #portalOutlet [cdkPortalOutlet]="componentPortal" ></ng-template>
 `,
     imports: [ NgTemplateOutlet, PortalModule, NgIf ],
     standalone: true
