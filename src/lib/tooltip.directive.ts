@@ -117,13 +117,15 @@ export const openTooltip = async (
         right: null
     };
 
-    if (evt.clientY + height > window.innerHeight)
-        cords.bottom = (window.innerHeight - evt.clientY) + "px";
-    if (evt.clientX + width > window.innerWidth)
-        cords.right = (window.innerWidth - evt.clientX) + "px";
+    const bounds = (evt.target as HTMLElement).getBoundingClientRect();
 
-    if (!cords.bottom) cords.top = evt.clientY + "px";
-    if (!cords.right) cords.left = evt.clientX + "px";
+    if (bounds.y + height > window.innerHeight)
+        cords.bottom = (window.innerHeight - bounds.y) + "px";
+    if (bounds.x + width > window.innerWidth)
+        cords.right = (window.innerWidth - bounds.x) + "px";
+
+    if (!cords.bottom) cords.top = bounds.y + "px";
+    if (!cords.right) cords.left = bounds.x + "px";
 
     const specificId = crypto.randomUUID();
 
