@@ -1,0 +1,13 @@
+<ng-container
+    *ngIf="ngTooltipComponent"
+    [ngComponentOutlet]="ngTooltipComponent"
+>
+</ng-container>
+
+<ng-container
+    *ngIf="ngTooltipTemplate"
+>
+    <ng-container
+        *ngTemplateOutlet="ngTooltipTemplate; context: { '$implicit': data }"
+    ></ng-container>
+</ng-container>
