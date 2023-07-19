@@ -110,7 +110,7 @@ export const openTooltip = async (
 ) => {
     const rect = await calcTooltipBounds(ngTooltipTemplate, ngTooltipComponent);
 
-    const cords = await getPosition(el, config, rect);
+    const cords = getPosition(el, config, rect);
 
     const specificId = crypto.randomUUID();
 

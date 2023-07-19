@@ -1,4 +1,4 @@
-import { CommonModule, NgComponentOutlet, NgIf, NgTemplateOutlet } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, Inject, Input, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NgxTooltipOptions } from '../tooltip.directive';

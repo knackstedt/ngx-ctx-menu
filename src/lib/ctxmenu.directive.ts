@@ -54,7 +54,7 @@ export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuI
     evt.preventDefault();
     evt.stopPropagation();
 
-    const cords = await getPosition(evt, config, await calcMenuItemBounds(menuItems));
+    const cords = getPosition(evt, config, await calcMenuItemBounds(menuItems));
     const specificId = crypto.randomUUID();
 
 

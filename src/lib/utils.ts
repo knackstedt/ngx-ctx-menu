@@ -1,13 +1,13 @@
 
 
-export const getPosition = async (el: HTMLElement | PointerEvent, config, bounds: DOMRect) => {
+export const getPosition = (el: HTMLElement | PointerEvent, config, bounds: DOMRect) => {
     const src: DOMRect = !!el['nodeName']
                 ? (el as HTMLElement).getBoundingClientRect()
                 : {
                     x: el['clientX'],
                     y: el['clientY'],
-                    width: 0,
-                    height: 0
+                    width: 0.0001,
+                    height: 0.0001
                 } as DOMRect;
 
     const { width, height } = bounds;
@@ -58,10 +58,10 @@ export const getPosition = async (el: HTMLElement | PointerEvent, config, bounds
         cords.top = Math.min(winh - height, cords.top);
 
         if (config?.position == "left") {
-            cords.left = src.x - (width + (config?.arrowSize || 0) + config.arrowPadding);
+            cords.left = src.x - (width + (config?.arrowSize || 0) + (config.arrowPadding || 0));
         }
         if (config?.position == "right" || !config?.position) {
-            cords.left = src.x + (src.width + (config?.arrowSize || 0) + config.arrowPadding);
+            cords.left = src.x + (src.width + (config?.arrowSize || 0) + (config.arrowPadding || 0));
         }
 
         // Lower bound
@@ -107,10 +107,10 @@ export const getPosition = async (el: HTMLElement | PointerEvent, config, bounds
 
 
         if (config?.position == "top") {
-            cords.top = src.y - (height + (config?.arrowSize || 0) + config.arrowPadding);
+            cords.top = src.y - (height + (config?.arrowSize || 0) + (config.arrowPadding || 0));
         }
         if (config?.position == "bottom") {
-            cords.top = src.y + (src.height + (config?.arrowSize || 0) + config.arrowPadding);
+            cords.top = src.y + (src.height + (config?.arrowSize || 0) + (config.arrowPadding || 0));
         }
 
         // Lower bound
@@ -122,6 +122,8 @@ export const getPosition = async (el: HTMLElement | PointerEvent, config, bounds
     // Assign unit
     cords.top = cords.top + 'px';
     cords.left = cords.left + 'px';
+
+    console.log("opening with cords", cords);
 
     return cords;
 }
