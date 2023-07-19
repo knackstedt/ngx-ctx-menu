@@ -4,6 +4,7 @@ import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context
 import { ContextMenuItem } from './types';
 import { NgxAppMenuOptions } from './appmenu.directive';
 import { createApplication } from '@angular/platform-browser';
+import { getPosition } from './utils';
 
 @Directive({
     selector: '[ngx-ctx-menu]',
@@ -53,23 +54,7 @@ export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuI
     evt.preventDefault();
     evt.stopPropagation();
 
-    const { width, height } = await calcMenuItemBounds(menuItems);
-
-    const cords = {
-        top: null,
-        left: null,
-        bottom: null,
-        right: null
-    };
-
-    if (evt.clientY + height > window.innerHeight)
-        cords.bottom = (window.innerHeight - evt.clientY) + "px";
-    if (evt.clientX + width > window.innerWidth)
-        cords.right = (window.innerWidth - evt.clientX) + "px";
-
-    if (!cords.bottom) cords.top = evt.clientY + "px";
-    if (!cords.right) cords.left = evt.clientX + "px";
-
+    const cords = await getPosition(evt, config, await calcMenuItemBounds(menuItems));
     const specificId = crypto.randomUUID();
 
 

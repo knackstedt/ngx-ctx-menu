@@ -1,7 +1,8 @@
-import { Directive, Input, HostListener, TemplateRef, Type } from '@angular/core';
+import { Directive, Input, HostListener, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TooltipComponent, calcTooltipBounds } from './tooltip/tooltip.component';
 import { NgComponentOutlet } from '@angular/common';
+import { getPosition } from './utils';
 
 export type NgxTooltipOptions = Partial<{
     /**
@@ -69,7 +70,8 @@ export class NgxTooltipDirective {
     @Input("ngx-tooltip-component") ngTooltipComponent: Type<any>;
 
     constructor(
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private viewContainer: ViewContainerRef
     ) {
 
     }
@@ -87,7 +89,8 @@ export class NgxTooltipDirective {
     // Needs to be public so we can manually open the dialog
     @HostListener('pointerenter', ['$event'])
     public async onContextMenu(evt: PointerEvent) {
-        this.dialogInstance = await openTooltip(this.dialog, this.ngTooltipTemplate, this.ngTooltipComponent, this.data, evt, this.config);
+        const el = this.viewContainer.element.nativeElement;
+        this.dialogInstance = await openTooltip(this.dialog, this.ngTooltipTemplate, this.ngTooltipComponent, this.data, el, this.config);
     }
 
     @HostListener('pointerleave', ['$event'])
@@ -102,33 +105,14 @@ export const openTooltip = async (
     ngTooltipTemplate: TemplateRef<any>,
     ngTooltipComponent: Type<any>,
     data: any,
-    evt: PointerEvent,
+    el: HTMLElement,
     config?: NgxTooltipOptions
 ) => {
-    evt.preventDefault();
-    evt.stopPropagation();
+    const rect = await calcTooltipBounds(ngTooltipTemplate, ngTooltipComponent);
 
-    const { width, height } = await calcTooltipBounds(ngTooltipTemplate, ngTooltipComponent);
-
-    const cords = {
-        top: null,
-        left: null,
-        bottom: null,
-        right: null
-    };
-
-    const bounds = (evt.target as HTMLElement).getBoundingClientRect();
-
-    if (bounds.y + height > window.innerHeight)
-        cords.bottom = (window.innerHeight - bounds.y) + "px";
-    if (bounds.x + width > window.innerWidth)
-        cords.right = (window.innerWidth - bounds.x) + "px";
-
-    if (!cords.bottom) cords.top = bounds.y + "px";
-    if (!cords.right) cords.left = bounds.x + "px";
+    const cords = await getPosition(el, config, rect);
 
     const specificId = crypto.randomUUID();
-
 
     return dialog.open(TooltipComponent, {
         data: {
