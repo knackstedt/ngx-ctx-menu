@@ -44,8 +44,6 @@ const calcComponentBounds = async (component: Type<any>, data: any) => {
     const rect = el.getBoundingClientRect();
     app.destroy();
     del.remove();
-
-    console.log("Calculated bounds", rect);
     return rect;
 }
 

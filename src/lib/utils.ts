@@ -123,7 +123,5 @@ export const getPosition = (el: HTMLElement | PointerEvent, config, bounds: DOMR
     cords.top = cords.top + 'px';
     cords.left = cords.left + 'px';
 
-    console.log("opening with cords", cords);
-
     return cords;
 }
