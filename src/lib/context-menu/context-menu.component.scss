@@ -1,4 +1,4 @@
-:ng-deep {
+::ng-deep {
     .cdk-overlay-container .ngx-ctx-menu {
         --mdc-dialog-container-color: var(--ngx-ctx-menu-background-color, #2f2f2f);
 
@@ -10,20 +10,25 @@
         }
     }
 
-    .cdk-overlay-container .context-menu-backdrop.cdk-overlay-backdrop-showing {
-        opacity: 0;
-    }
+    // .cdk-overlay-container .context-menu-backdrop.cdk-overlay-backdrop-showing {
+    //     opacity: 0;
+    // }
 
     .cdk-overlay-pane.ngx-ctx-menu {
-        .mat-dialog-container {
-            padding: 0;
+        // .mat-dialog-container {
+        //     padding: 0;
+        // }
+        .mat-mdc-dialog-surface {
+            overflow: visible;
         }
     }
 }
 
 :host {
     user-select: none;
-    background: var(--ngx-ctx-menu-background-color, #333)
+    background: var(--ngx-ctx-menu-background-color, #333);
+    z-index: 1;
+    position: relative;
 }
 
 table {
@@ -129,3 +134,26 @@ td {
     vertical-align: middle;
 }
 
+// .backdrop {
+//     position: absolute;
+//     z-index: -1;
+//     inset: -32px -12px -32px -12px;
+//     background-color: #0003;
+// }
+
+// .backdrop-outer {
+//     position: absolute;
+//     z-index: -2;
+//     // inset: -500px;
+//     background-color: #0003;
+
+//     top: -50vh;
+//     bottom: -50vh;
+//     left: -50vw;
+//     right: -50vw;
+// }
+
+// .backdrop.parent {
+//     background-color: #f006;
+//     inset: 0;
+// }

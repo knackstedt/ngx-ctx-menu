@@ -1,5 +1,5 @@
 import { CommonModule, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, HostListener, Inject, Input, OnInit, Optional, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, Inject, Input, OnInit, Optional, Output, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { DomSanitizer, createApplication } from '@angular/platform-browser';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -95,19 +95,20 @@ class TemplateWrapper {
         NgForOf,
         NgTemplateOutlet,
         MatIconModule,
-        MatProgressSpinnerModule,
-        NgxAppMenuDirective
+        MatProgressSpinnerModule
     ],
     standalone: true
 })
 export class ContextMenuComponent implements OnInit {
     @Input() public data: any;
+    @Input() public parentCords: DOMRect;
     @Input() public items: ContextMenuItem[];
     @Input() public config: NgxAppMenuOptions;
     @Input() public id: string;
 
     @Output() closeSignal = new EventEmitter();
 
+    selfCords: DOMRect;
     // Check if there are any slashes or dots -- that will clearly exclude it from being a mat icon
     public readonly matIconRx = /[\/\.]/i;
     showIconColumn = true;
@@ -119,9 +120,11 @@ export class ContextMenuComponent implements OnInit {
         @Optional() @Inject(MAT_DIALOG_DATA) private _data: any,
         @Optional() public dialog: MatDialog, // optional only for the purpose of estimating dimensions
         @Optional() public dialogRef: MatDialogRef<any>,
+        private changeDetector: ChangeDetectorRef
     ) {
         // Defaults are set before @Input() hooks evaluate
         this.data  = this._data?.data;
+        this.parentCords  = this._data?.parentCords;
         this.items = this._data?.items;
         this.config = this._data?.config;
         this.id = this._data?.id;
@@ -146,7 +149,7 @@ export class ContextMenuComponent implements OnInit {
                 try { i['_visible'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
 
             if (typeof i.linkTemplate == "function")
-                try { i['_link'] = i.isVisible(this.data || {}); } catch (e) { console.warn(e) }
+                try { i['_link'] = i.linkTemplate(this.data || {}); } catch (e) { console.warn(e) }
         });
 
         // Show the icon column if there are any items with an icon
@@ -161,6 +164,17 @@ export class ContextMenuComponent implements OnInit {
                 typeof i['shortcut'] == "string" &&
                 i['shortcut'].length > 2
             );
+
+        // setTimeout(() => {
+        //     this.closeOnLeave = true
+        // }, 300);
+    }
+
+    ngAfterViewInit() {
+        if (this.parentCords) {
+            this.selfCords = this.viewContainer?.element?.nativeElement?.getBoundingClientRect();
+            this.changeDetector.detectChanges();
+        }
     }
 
     /**
@@ -169,9 +183,9 @@ export class ContextMenuComponent implements OnInit {
      * @param evt
      * @returns
      */
-    async onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, evt) {
-        if (typeof item == 'string') return;
-        if (item.separator == true) return;
+    async onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, hideBackdrop = false) {
+        if (typeof item == 'string') return null;
+        if (item.separator == true) return null;
 
         // If cache is enabled, only load if we don't have any children.
         const forceLoad = (item.cacheResolvedChildren ? !item.children : true);
@@ -187,7 +201,7 @@ export class ContextMenuComponent implements OnInit {
                 item.action(this.data);
 
             this.close();
-            return;
+            return null;
         }
 
         // Need X pos, Y pos, width and height
@@ -215,25 +229,37 @@ export class ContextMenuComponent implements OnInit {
 
         const component = item.children ? ContextMenuComponent : TemplateWrapper as any;
 
-        let _s = this.dialog.open(component, {
+        const dialogRef = this.dialog.open(component, {
             position: cords,
             panelClass: ["ngx-ctx-menu", "ngx-app-menu"].concat(this.config?.customClass || []),
             backdropClass: "ngx-ctx-menu-backdrop",
+            hasBackdrop: !hideBackdrop,
             data: {
                 data: this.data,
+                parentCords: this.viewContainer?.element?.nativeElement?.getBoundingClientRect(),
                 items: item.children,
                 template: item.childTemplate,
                 config: this.config
             }
-        })
-        .afterClosed()
-            .subscribe((result) => {
-                if (result && typeof item.action == 'function')
-                    item.action(result);
-                this.close();
+        });
 
-                _s.unsubscribe();
-            });
+        let _s = dialogRef
+            .afterClosed()
+                .subscribe((result) => {
+                    if (result != -1) {
+                        if (result && typeof item.action == 'function')
+                            item.action(result);
+
+                        this.close();
+                    }
+                    else {
+                        item['_selfclose'] = Date.now();
+                    }
+
+                    _s.unsubscribe();
+                });
+
+        return dialogRef;
     }
 
     /**
@@ -253,8 +279,7 @@ export class ContextMenuComponent implements OnInit {
     close() {
         this.closeSignal.emit();
 
-        if (this.dialogRef)
-            this.dialogRef.close();
+        this.dialogRef?.close();
     }
 
     /**
@@ -283,4 +308,34 @@ export class ContextMenuComponent implements OnInit {
             target.style['margin-left'] = newLeft;
         }
     }
+
+    // private hoveredItems: MatDialogRef<any>[];
+    // async onHover(item, row: HTMLTableRowElement) {
+    //     this.hoveredItems.forEach(i => i.close(-1));
+
+    //     if (typeof item['_selfclose'] == 'number' && (Date.now() - item['_selfclose']) < 3*1000) return;
+
+    //     const hi = await this.onMenuItemClick(item, row, true);
+    //     this.hoveredItems.push(hi);
+
+    //     hi.afterClosed().toPromise().then(e => {
+    //         this.viewContainer.element.nativeElement.focus();
+    //         this.hoveredItems.splice(this.hoveredItems.findIndex(i => i == hi), 1);
+    //     })
+    // }
+
+    // closeOnLeave = false;
+    // async onLeave() {
+    //     if (this.closeOnLeave) {
+    //         if (this.hoveredItems.length > 0) {
+    //             this.hoveredItems.forEach(i => i.close(-1));
+    //             this.hoveredItems.splice(0);
+    //         }
+    //         else {
+    //             this.closeSignal.next(-1);
+
+    //             this.dialogRef.close(-1);
+    //         }
+    //     }
+    // }
 }

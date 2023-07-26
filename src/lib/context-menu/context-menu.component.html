@@ -7,14 +7,12 @@
                 <tr #row
                     *ngIf="item != 'separator' && item.separator != true && item['_visible']"
                     [class.disabled]="item['_disabled']"
-                    (click)="!item['_disabled'] && onMenuItemClick(item, row, $event)"
+                    (click)="!item['_disabled'] && onMenuItemClick(item, row)"
                     [class.hover]="item['children'] && row['hover']"
-                    (pointerenter)="row['hover'] = true"
+                    (pointerenter)="row['hover'] = true;"
                     (pointerleave)="row['hover'] = false"
-                    [ngx-app-menu]="item['children']"
-                    [ngx-app-menu-context]="data"
-                    [ngx-app-menu-config]="{ trigger: 'hover' }"
                 >
+                <!--  (item['children']?.length > 0 || item['childTemplate']) && onHover(item, row); closeOnLeave=true -->
                     <td class="icon" *ngIf="showIconColumn">
                         <img *ngIf="matIconRx.test(item.icon); else matIcon" [src]="item.icon" />
                         <ng-template #matIcon>
@@ -24,11 +22,7 @@
 
                     <!-- 'Normal' action based item -->
                     <ng-container>
-                        <td class="label" [style.padding-left]="showIconColumn ? 0 : '16px'" *ngIf="item.label">
-                            <div [innerHTML]="item['_formattedLabel']"></div>
-                        </td>
                         <td class="label"
-                            *ngIf="item.labelTemplate"
                             [style.padding-left]="showIconColumn ? 0 : '16px'"
                         >
                             <a
@@ -36,13 +30,18 @@
                                 [attr.href]="(item['_link'] || item.link) ? sanitizer.bypassSecurityTrustUrl(item['_link'] || item.link) : undefined"
                             >
                                 <ng-container
-                                    *ngIf="$any(item.labelTemplate).prototype; else labelTemplate"
+                                    *ngIf="$any(item.labelTemplate)?.prototype; else labelTemplate"
                                     [ngTemplateOutlet]="$any(item).labelTemplate"
                                     [ngTemplateOutletContext]="{ '$implicit': data }"
                                 />
 
                                 <ng-template #labelTemplate>
-                                    {{$any(item)?.labelTemplate(data || {})}}
+                                    <ng-container *ngIf="!$any(item)?.labelTemplate">
+                                        <div [innerHTML]="item['_formattedLabel']"></div>
+                                    </ng-container>
+                                    <ng-container *ngIf="$any(item)?.labelTemplate">
+                                        {{$any(item)?.labelTemplate(data || {})}}
+                                    </ng-container>
                                 </ng-template>
                             </a>
                         </td>
@@ -82,3 +81,49 @@
         </ng-container>
     </tbody>
 </table>
+
+<!-- <div *ngIf="true" class="backdrop"></div> -->
+<!-- <div
+    *ngIf="parentCords && this.selfCords"
+    class="backdrop parent"
+    [style.top]="(parentCords.y - selfCords.y + 6) + 'px'"
+    [style.left]="(parentCords.x - selfCords.x + 12) + 'px'"
+    [style.width]="(parentCords.width) + 'px'"
+    [style.height]="(parentCords.height) + 'px'"
+>
+</div> -->
+<!-- <ng-container *ngIf="parentCords && selfCords">
+    <div #top
+        class="backdrop-outer"
+        [style.bottom]="(parentCords.y - selfCords.y)*-1 + parentCords.height + 'px'"
+        style="background: #f003;"
+        (pointerenter)="onLeave()"
+    ></div>
+    <div #right
+        class="backdrop-outer"
+        [style.left]="((parentCords.x - selfCords.x) + parentCords.width) + 'px'"
+        style="background: #0f03;"
+        (pointerenter)="onLeave()"
+    >
+    <div>px: {{parentCords.x}}</div>
+    <div>py: {{parentCords.y}}</div>
+    <div>pw: {{parentCords.width}}</div>
+    <div>ph: {{parentCords.height}}</div>
+    <div>sx: {{selfCords.x}}</div>
+    <div>sy: {{selfCords.y}}</div>
+    <div>sw: {{selfCords.width}}</div>
+    <div>sh: {{selfCords.height}}</div>
+    </div>
+    <div #bottom
+        class="backdrop-outer"
+        [style.top]="((parentCords.y + parentCords.height - selfCords.y)) + 'px'"
+        style="background: #00f3;"
+        (pointerenter)="onLeave()"
+    ></div>
+    <div #left
+        class="backdrop-outer"
+        [style.right]="((parentCords.x - selfCords.x)*-1 + parentCords.width + 32) + 'px'"
+        style="background: #fff3;"
+        (pointerenter)="onLeave()"
+    ></div>
+</ng-container> -->
