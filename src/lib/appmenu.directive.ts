@@ -111,7 +111,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
                 config: this.config,
                 id: specificId
             },
-            panelClass: ["ngx-app-menu", 'ngx-' + specificId].concat(this.config?.customClass || []),
+            panelClass: ["ngx-app-menu", "ngx-ctx-menu", 'ngx-' + specificId].concat(this.config?.customClass || []),
             position: cords,
             backdropClass: "ngx-app-menu-backdrop"
         })

@@ -57,6 +57,7 @@ export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuI
     const cords = getPosition(evt, config, await calcMenuItemBounds(menuItems));
     const specificId = crypto.randomUUID();
 
+    if (!config.alignment) config.alignment = "start";
 
     return new Promise(res => {
         dialog.open(ContextMenuComponent, {

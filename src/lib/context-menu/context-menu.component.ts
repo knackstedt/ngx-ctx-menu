@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ContextMenuItem } from '../types';
-import { NgxAppMenuOptions } from '../appmenu.directive';
+import { NgxAppMenuDirective, NgxAppMenuOptions } from '../appmenu.directive';
 import { ComponentPortal, PortalModule } from '@angular/cdk/portal';
 import { firstValueFrom } from 'rxjs';
 
@@ -95,7 +95,8 @@ class TemplateWrapper {
         NgForOf,
         NgTemplateOutlet,
         MatIconModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        NgxAppMenuDirective
     ],
     standalone: true
 })
