@@ -4,8 +4,6 @@ import { calcMenuItemBounds, ContextMenuComponent } from './context-menu/context
 import { ContextMenuItem } from './types';
 import { getPosition } from './utils';
 
-const arrowPadding = 8;
-
 export type NgxAppMenuTriggers = "click" | "dblclick" | "hover" | "contextmenu";
 
 export type NgxAppMenuOptions = Partial<{

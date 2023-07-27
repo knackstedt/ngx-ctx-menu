@@ -1,6 +1,6 @@
 
 
-export const getPosition = (el: HTMLElement | PointerEvent, config, bounds: DOMRect) => {
+export const getPosition = (el: HTMLElement | PointerEvent, config: any = {}, bounds: DOMRect) => {
     const src: DOMRect = !!el['nodeName']
                 ? (el as HTMLElement).getBoundingClientRect()
                 : {
@@ -58,10 +58,10 @@ export const getPosition = (el: HTMLElement | PointerEvent, config, bounds: DOMR
         cords.top = Math.min(winh - height, cords.top);
 
         if (config?.position == "left") {
-            cords.left = src.x - (width + (config?.arrowSize || 0) + (config.arrowPadding || 0));
+            cords.left = src.x - (width + (config?.arrowSize || 0) + (config?.arrowPadding || 0));
         }
         if (config?.position == "right" || !config?.position) {
-            cords.left = src.x + (src.width + (config?.arrowSize || 0) + (config.arrowPadding || 0));
+            cords.left = src.x + (src.width + (config?.arrowSize || 0) + (config?.arrowPadding || 0));
         }
 
         // Lower bound
@@ -107,10 +107,10 @@ export const getPosition = (el: HTMLElement | PointerEvent, config, bounds: DOMR
 
 
         if (config?.position == "top") {
-            cords.top = src.y - (height + (config?.arrowSize || 0) + (config.arrowPadding || 0));
+            cords.top = src.y - (height + (config?.arrowSize || 0) + (config?.arrowPadding || 0));
         }
         if (config?.position == "bottom") {
-            cords.top = src.y + (src.height + (config?.arrowSize || 0) + (config.arrowPadding || 0));
+            cords.top = src.y + (src.height + (config?.arrowSize || 0) + (config?.arrowPadding || 0));
         }
 
         // Lower bound
