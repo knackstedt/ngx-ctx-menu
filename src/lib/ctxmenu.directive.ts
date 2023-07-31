@@ -50,7 +50,7 @@ export class NgxContextMenuDirective {
 }
 
 // Helper to open the context menu without using the directive.
-export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent, config?: NgxAppMenuOptions) => {
+export const openContextMenu = async (dialog: MatDialog, menuItems: ContextMenuItem[], data: any, evt: PointerEvent, config: NgxAppMenuOptions = {}) => {
     evt.preventDefault();
     evt.stopPropagation();
 
