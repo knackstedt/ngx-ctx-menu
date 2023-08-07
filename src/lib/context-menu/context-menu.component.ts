@@ -133,7 +133,6 @@ export class ContextMenuComponent implements OnInit {
     ngOnInit() {
         this.items?.forEach(i => {
             if (typeof i == "string") return;
-            if (i.separator == true) return;
 
             // Set defaults
             i['_disabled'] = false;
@@ -185,7 +184,7 @@ export class ContextMenuComponent implements OnInit {
      */
     async onMenuItemClick(item: ContextMenuItem, row: HTMLTableRowElement, hideBackdrop = false) {
         if (typeof item == 'string') return null;
-        if (item.separator == true) return null;
+        if (item.separator) return null;
 
         // If cache is enabled, only load if we don't have any children.
         const forceLoad = (item.cacheResolvedChildren ? !item.children : true);

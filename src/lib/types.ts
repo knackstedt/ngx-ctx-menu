@@ -106,12 +106,12 @@ export type BaseCtx<T = any> = {
     separator?: false
 };
 
-type Separator = {
+type Separator<T> = {
     label: string,
     separator: true
-}
+} & Omit<BaseCtx<T>, 'action'>
 
 export type ContextMenuItem<T = any> =
     BaseCtx<T> |
-    Separator |
+    Separator<T> |
     "separator";
