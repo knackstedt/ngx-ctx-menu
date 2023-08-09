@@ -32,7 +32,7 @@
                                 <ng-container
                                     *ngIf="$any(item.labelTemplate)?.prototype; else labelTemplate"
                                     [ngTemplateOutlet]="$any(item).labelTemplate"
-                                    [ngTemplateOutletContext]="{ '$implicit': data }"
+                                    [ngTemplateOutletContext]="{ '$implicit': data, 'dialog': dialogRef }"
                                 />
 
                                 <ng-template #labelTemplate>
