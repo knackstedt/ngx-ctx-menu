@@ -196,10 +196,12 @@ export class ContextMenuComponent implements OnInit {
         }
 
         if (!item.childTemplate && !item.children) {
-            if (item.action)
+            if (item.action) {
                 item.action(this.data);
+                this.close();
+            }
+            // If no action, this is simply a text item.
 
-            this.close();
             return null;
         }
 
