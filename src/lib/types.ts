@@ -103,15 +103,9 @@ export type BaseCtx<T = any> = {
      * This item is a separator.
      * Can be used with label to make a label separator.
      */
-    separator?: false
+    separator?: boolean
 };
-
-type Separator<T> = {
-    label: string,
-    separator: true
-} & Omit<BaseCtx<T>, 'action'>
 
 export type ContextMenuItem<T = any> =
     BaseCtx<T> |
-    Separator<T> |
     "separator";
