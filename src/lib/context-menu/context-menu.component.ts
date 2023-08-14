@@ -10,9 +10,9 @@ import { NgxAppMenuDirective, NgxAppMenuOptions } from '../appmenu.directive';
 import { ComponentPortal, PortalModule } from '@angular/cdk/portal';
 import { firstValueFrom } from 'rxjs';
 
-export const calcMenuItemBounds = async (menuItems: ContextMenuItem[]) => {
+export const calcMenuItemBounds = async (menuItems: ContextMenuItem[], dataObj: any) => {
     const data = {
-        data: null,
+        data: dataObj,
         items: menuItems,
         config: {},
         id: null
@@ -131,6 +131,7 @@ export class ContextMenuComponent implements OnInit {
     }
 
     ngOnInit() {
+        console.log("fubar")
         this.items?.forEach(i => {
             if (typeof i == "string") return;
 
@@ -218,7 +219,7 @@ export class ContextMenuComponent implements OnInit {
         // Set position coordinates
         const { width, height } = await (item.childTemplate
             ? calcComponentBounds(TemplateWrapper, { template: item.childTemplate })
-            : calcMenuItemBounds(item.children));
+            : calcMenuItemBounds(item.children, this.data));
 
         if (bounds.y + height > window.innerHeight)
             cords.bottom = "0px";

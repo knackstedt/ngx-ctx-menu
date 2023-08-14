@@ -94,7 +94,7 @@ export class NgxAppMenuDirective implements AfterViewInit {
     private async openDialog(evt: MouseEvent) {
         const el = this.viewContainer.element.nativeElement as HTMLElement;
 
-        const cords = getPosition(el, this.config, await calcMenuItemBounds(this.menuItems));
+        const cords = getPosition(el, this.config, await calcMenuItemBounds(this.menuItems, this.data));
 
         const specificId = crypto.randomUUID();
 
