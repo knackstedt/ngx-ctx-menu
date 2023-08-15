@@ -131,7 +131,6 @@ export class ContextMenuComponent implements OnInit {
     }
 
     ngOnInit() {
-        console.log("fubar")
         this.items?.forEach(i => {
             if (typeof i == "string") return;
 
