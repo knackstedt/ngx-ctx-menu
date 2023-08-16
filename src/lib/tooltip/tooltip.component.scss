@@ -1,4 +1,4 @@
-:ng-deep {
+::ng-deep {
     .cdk-overlay-container .ngx-tooltip {
         --mdc-dialog-container-color: var(--ngx-tooltip-background-color, #2f2f2f);
 
@@ -7,6 +7,9 @@
         }
         .mdc-dialog--open .mdc-dialog__container {
             transform: none;
+        }
+        .mdc-dialog__surface {
+            overflow: visible;
         }
     }
 
@@ -28,19 +31,14 @@
     min-width: 2px;
     min-height: 2px;
     display: block;
-    // pointer-events: none !important;
-
-    // * {
-    //     pointer-events: none;
-    // }
-
-    // position: relative;
-    // &::before {
-    //     position: absolute;
-    //     left: -20px;
-    //     top: -20px;
-    //     bottom: -20px;
-    //     right: -20px;
-    // }
 }
 
+div {
+    position: absolute;
+    // background-color: #ff000055;
+}
+
+.n { bottom: 100%; left: -100vw; right: -100vw; height: 100vh; z-index: -1 }
+.e { left: 100%; top: -100vh; bottom: -100vh; width: 100vw; z-index: -1 }
+.s { top: 100%; left: -100vw; right: -100vw; height: 100vh; z-index: -1 }
+.w { right: 100%; top: -100vh; bottom: -100vh; width: 100vw; z-index: -1 }

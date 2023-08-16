@@ -29,6 +29,8 @@ export type NgxTooltipOptions = Partial<{
      * How much padding to add near the edges of the screen.
      */
     edgePadding: number,
+
+    customClass: string[]
 }>;
 
 @Directive({
@@ -43,7 +45,7 @@ export class NgxTooltipDirective {
     /**
      */
     @Input("ngxTooltip")
-    @Input("ngx-tooltip") template: string | TemplateRef<any> | Type<any>;
+    @Input("ngx-tooltip") template: TemplateRef<any> | Type<any>;
 
     /**
      * Configuration for opening the app menu
@@ -57,31 +59,14 @@ export class NgxTooltipDirective {
     @Input("ngxTooltipContext")
     @Input("ngx-tooltip-context") data: any = {};
 
-    /**
-     * A template for the tooltip item
-     */
-    @Input("ngxTooltipTemplate")
-    @Input("ngx-tooltip-template") ngTooltipTemplate: TemplateRef<any>;
-
-    /**
-     * A component for the tooltip item
-     */
-    @Input("ngxTooltipComponent")
-    @Input("ngx-tooltip-component") ngTooltipComponent: Type<any>;
-
     constructor(
         private dialog: MatDialog,
         private viewContainer: ViewContainerRef
     ) {
-
     }
 
     ngOnInit() {
-        if (this.template instanceof TemplateRef)
-            this.ngTooltipTemplate = this.template;
-        else if (typeof this.template == "function")
-            this.ngTooltipComponent = this.template;
-
+        console.log("Tooltip debug", this)
         // TODO: string case
     }
 
@@ -90,40 +75,41 @@ export class NgxTooltipDirective {
     @HostListener('pointerenter', ['$event'])
     public async onContextMenu(evt: PointerEvent) {
         const el = this.viewContainer.element.nativeElement;
-        this.dialogInstance = await openTooltip(this.dialog, this.ngTooltipTemplate, this.ngTooltipComponent, this.data, el, this.config);
-    }
-
-    @HostListener('pointerleave', ['$event'])
-    onPointerLeave() {
-        this.dialogInstance.close();
+        this.dialogInstance = await openTooltip(this.dialog, this.template, this.data, el, this.config);
     }
 }
 
 // Helper to open the context menu without using the directive.
 export const openTooltip = async (
     dialog: MatDialog,
-    ngTooltipTemplate: TemplateRef<any>,
-    ngTooltipComponent: Type<any>,
+    template: TemplateRef<any> | Type<any>,
     data: any,
     el: HTMLElement,
     config?: NgxTooltipOptions
 ) => {
-    const rect = await calcTooltipBounds(ngTooltipTemplate, ngTooltipComponent);
 
+    const rect = await calcTooltipBounds(template, data);
+    const ownerCords = el.getBoundingClientRect();
     const cords = getPosition(el, config, rect);
-
     const specificId = crypto.randomUUID();
 
-    return dialog.open(TooltipComponent, {
-        data: {
-            data: data,
-            ngTooltipTemplate: ngTooltipTemplate,
-            ngTooltipComponent: ngTooltipComponent,
-            config: config,
-            id: specificId
-        },
-        panelClass: ["ngx-tooltip", 'ngx-' + specificId],
-        position: cords,
-        hasBackdrop: false
-    });
+    return new Promise(res => {
+        dialog.open(TooltipComponent, {
+            data: {
+                data: data,
+                template: template,
+                config: config,
+                ownerCords: ownerCords,
+                selfCords: cords,
+                id: specificId
+            },
+            panelClass: ["ngx-tooltip", 'ngx-' + specificId].concat(config?.customClass || []),
+            position: cords,
+            hasBackdrop: false
+        })
+            .afterClosed()
+            .subscribe(s => {
+                res(s);
+            })
+    }) as Promise<any>;
 };

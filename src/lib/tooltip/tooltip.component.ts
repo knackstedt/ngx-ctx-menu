@@ -4,33 +4,40 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { NgxTooltipOptions } from '../tooltip.directive';
 import { Optional } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
+import { firstValueFrom } from 'rxjs';
 
-export const calcTooltipBounds = async (ngTooltipTemplate?: TemplateRef<any>, ngTooltipComponent?: Type<any>) => {
-    const data = {
-        data: null,
-        ngTooltipTemplate,
-        ngTooltipComponent,
+export const calcTooltipBounds = async (template: TemplateRef<any> | Type<any>, data) => {
+    const args = {
+        data: data || {},
+        template,
         config: {},
+        selfCords: { left: "0px", top: "0px" },
+        ownerCords: { x: 0, y: 0, width: 0, height: 0 },
         id: null
     }
+    // Forcibly bootstrap the ctx menu outside of the client application's zone.
+    const app = await createApplication({
+        providers: [
+            { provide: MAT_DIALOG_DATA, useValue: args }
+        ]
+    });
 
     const del = document.createElement("div");
     del.style.position = "absolute";
     del.style.left = '-1000vw';
     document.body.append(del);
 
-    // Forcibly bootstrap the ctx menu outside of the client application's zone.
-    const app = await createApplication({
-        providers: [
-            { provide: MAT_DIALOG_DATA, useValue: data }
-        ]
-    });
+    const base = app.bootstrap(TooltipComponent, del);
+    const { instance } = base;
 
-    const component = app.bootstrap(TooltipComponent, del);
-    const el: HTMLElement = component.instance.viewContainer?.element?.nativeElement;
+    await firstValueFrom(app.isStable);
+
+    const el: HTMLElement = instance.viewContainer?.element?.nativeElement;
+
     const rect = el.getBoundingClientRect();
     app.destroy();
     del.remove();
+
     return rect;
 }
 
@@ -50,11 +57,18 @@ export const calcTooltipBounds = async (ngTooltipTemplate?: TemplateRef<any>, ng
 export class TooltipComponent {
     @Input() data: any;
     @Input() config: NgxTooltipOptions;
-    @Input() ngTooltipTemplate: TemplateRef<any>;
-    @Input() ngTooltipComponent: Type<any>;
+    @Input() ownerCords: DOMRect;
+    @Input() selfCords;
+    @Input() template: TemplateRef<any> | Type<any>;
 
+    isTemplate: boolean;
 
-    viewMode: "text" | "component"
+    coverRectCords = {
+        top: 0,
+        left: 0,
+        height: 0,
+        width: 0
+    }
 
     constructor(
         public viewContainer: ViewContainerRef,
@@ -63,10 +77,33 @@ export class TooltipComponent {
         @Optional() public dialogRef: MatDialogRef<any>,
     ) {
         // Defaults are set before @Input() hooks evaluate
-        this.data = this.data || this._data?.data;
+        this.data = this.data || this._data?.data || {};
         this.config = this.config || this._data?.config;
-        this.ngTooltipTemplate = this.ngTooltipTemplate || this._data?.ngTooltipTemplate;
-        this.ngTooltipComponent = this.ngTooltipComponent || this._data?.ngTooltipComponent;
+        this.template = this.template || this._data?.template;
+        this.ownerCords = this.ownerCords || this._data?.ownerCords;
+        this.selfCords = this.selfCords || this._data?.selfCords;
+    }
+
+    ngOnInit() {
+        if (this.selfCords == undefined)
+            console.trace(this.selfCords);
+
+        const selfY = parseInt(this.selfCords.top.replace('px', ''));
+        const selfX = parseInt(this.selfCords.left.replace('px', ''));
+
+        this.coverRectCords = {
+            top: this.ownerCords.y - selfY - 16,
+            left: this.ownerCords.x - selfX - 16,
+            height: this.ownerCords.height + 32,
+            width: this.ownerCords.width + 32
+        }
+
+        if (this.template instanceof TemplateRef)
+            this.isTemplate = true;
+        else if (typeof this.template == "function")
+            this.isTemplate = false;
+        else
+            throw new Error("Unrecognized template object provided.")
     }
 
     /**
@@ -75,6 +112,11 @@ export class TooltipComponent {
     @HostListener("window:resize")
     @HostListener("window:blur")
     private onClose() {
+        this.dialogRef?.close();
+    }
+
+    @HostListener("pointerleave")
+    private onPointerLeave() {
         this.dialogRef?.close();
     }
 }

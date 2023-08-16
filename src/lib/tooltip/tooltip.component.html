@@ -1,13 +1,28 @@
+<!-- Mouse event blocker for pointer leave -->
+<div
+    *ngIf="coverRectCords"
+    [style.top]="coverRectCords.top + 'px'"
+    [style.left]="coverRectCords.left + 'px'"
+    [style.height]="coverRectCords.height + 'px'"
+    [style.width]="coverRectCords.width + 'px'"
+></div>
+
+<div class="n" (pointerenter)="dialogRef.close()"></div>
+<div class="e" (pointerenter)="dialogRef.close()"></div>
+<div class="s" (pointerenter)="dialogRef.close()"></div>
+<div class="w" (pointerenter)="dialogRef.close()"></div>
+
 <ng-container
-    *ngIf="ngTooltipComponent"
-    [ngComponentOutlet]="ngTooltipComponent"
+    *ngIf="isTemplate == false"
+    [ngComponentOutlet]="$any(template)"
 >
 </ng-container>
 
 <ng-container
-    *ngIf="ngTooltipTemplate"
+    *ngIf="isTemplate == true"
 >
     <ng-container
-        *ngTemplateOutlet="ngTooltipTemplate; context: { '$implicit': data }"
+        [ngTemplateOutlet]="$any(template)"
+        [ngTemplateOutletContext]="{ '$implicit': data }"
     ></ng-container>
 </ng-container>
