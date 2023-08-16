@@ -1,15 +1,19 @@
 
 
 export const getPosition = (el: HTMLElement | PointerEvent, config: any = {}, bounds: DOMRect) => {
+    // Bounds of the popup owner
     const src: DOMRect = !!el['nodeName']
                 ? (el as HTMLElement).getBoundingClientRect()
                 : {
+                    // It's a pointer event, so we'll take the X and Y from the pointer.
                     x: el['clientX'],
                     y: el['clientY'],
+                    // Set a default tiny size, so we don't divide by zero.
                     width: 0.0001,
                     height: 0.0001
                 } as DOMRect;
 
+    // Popup bounds
     const { width, height } = bounds;
 
     const winh = window.innerHeight;
