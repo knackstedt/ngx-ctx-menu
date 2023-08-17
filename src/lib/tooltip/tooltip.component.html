@@ -9,7 +9,10 @@
     style="z-index: -1;"
 ></div>
 
-<div class="void" (pointerenter)="hasBootstrapped && dialogRef.close()"></div>
+<div class="void"
+    (pointerenter)="hasBootstrapped && dialogRef.close()"
+    (pointerdown)="hasBootstrapped && dialogRef.close()"
+></div>
 
 <div class="container">
     <ng-container
