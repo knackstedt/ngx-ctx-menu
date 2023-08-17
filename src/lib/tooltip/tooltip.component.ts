@@ -63,6 +63,7 @@ export class TooltipComponent {
 
     isTemplate: boolean;
     hasBootstrapped = false;
+    pointerIsOnVoid = false;
 
     coverRectCords = {
         top: 0,
@@ -86,8 +87,6 @@ export class TooltipComponent {
     }
 
     ngOnInit() {
-        if (this.selfCords == undefined)
-            console.trace(this.selfCords);
 
         const selfY = parseInt(this.selfCords.top.replace('px', ''));
         const selfX = parseInt(this.selfCords.left.replace('px', ''));
@@ -109,7 +108,9 @@ export class TooltipComponent {
         // TODO: resolve the event hook with the .void element
         setTimeout(() => {
             this.hasBootstrapped = true;
-        }, 1);
+            if (this.pointerIsOnVoid)
+                this.dialogRef.close();
+        }, 10);
     }
 
     /**

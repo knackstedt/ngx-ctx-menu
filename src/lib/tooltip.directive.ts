@@ -1,7 +1,6 @@
 import { Directive, Input, HostListener, TemplateRef, Type, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TooltipComponent, calcTooltipBounds } from './tooltip/tooltip.component';
-import { NgComponentOutlet } from '@angular/common';
 import { getPosition } from './utils';
 
 export type NgxTooltipOptions = Partial<{
@@ -66,14 +65,13 @@ export class NgxTooltipDirective {
     }
 
     ngOnInit() {
-        console.log("Tooltip debug", this)
-        // TODO: string case
     }
 
     private dialogInstance: MatDialogRef<any>;
+
     // Needs to be public so we can manually open the dialog
     @HostListener('pointerenter', ['$event'])
-    public async onContextMenu(evt: PointerEvent) {
+    public async onPointerEnter(evt: PointerEvent) {
         const el = this.viewContainer.element.nativeElement;
         this.dialogInstance = await openTooltip(this.dialog, this.template, this.data, el, this.config);
     }
