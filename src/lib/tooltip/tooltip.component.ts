@@ -62,6 +62,7 @@ export class TooltipComponent {
     @Input() template: TemplateRef<any> | Type<any>;
 
     isTemplate: boolean;
+    hasBootstrapped = false;
 
     coverRectCords = {
         top: 0,
@@ -103,7 +104,12 @@ export class TooltipComponent {
         else if (typeof this.template == "function")
             this.isTemplate = false;
         else
-            throw new Error("Unrecognized template object provided.")
+            throw new Error("Unrecognized template object provided.");
+
+        // TODO: resolve the event hook with the .void element
+        setTimeout(() => {
+            this.hasBootstrapped = true;
+        }, 1);
     }
 
     /**
@@ -117,6 +123,7 @@ export class TooltipComponent {
 
     @HostListener("pointerleave")
     private onPointerLeave() {
+
         this.dialogRef?.close();
     }
 }

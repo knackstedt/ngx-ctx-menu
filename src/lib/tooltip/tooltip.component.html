@@ -1,28 +1,29 @@
 <!-- Mouse event blocker for pointer leave -->
 <div
     *ngIf="coverRectCords"
+    class="owner-mask"
     [style.top]="coverRectCords.top + 'px'"
     [style.left]="coverRectCords.left + 'px'"
     [style.height]="coverRectCords.height + 'px'"
     [style.width]="coverRectCords.width + 'px'"
+    style="z-index: -1;"
 ></div>
 
-<div class="n" (pointerenter)="dialogRef.close()"></div>
-<div class="e" (pointerenter)="dialogRef.close()"></div>
-<div class="s" (pointerenter)="dialogRef.close()"></div>
-<div class="w" (pointerenter)="dialogRef.close()"></div>
+<div class="void" (pointerenter)="hasBootstrapped && dialogRef.close()"></div>
 
-<ng-container
-    *ngIf="isTemplate == false"
-    [ngComponentOutlet]="$any(template)"
->
-</ng-container>
-
-<ng-container
-    *ngIf="isTemplate == true"
->
+<div class="container">
     <ng-container
-        [ngTemplateOutlet]="$any(template)"
-        [ngTemplateOutletContext]="{ '$implicit': data }"
-    ></ng-container>
-</ng-container>
+        *ngIf="isTemplate == false"
+        [ngComponentOutlet]="$any(template)"
+    >
+    </ng-container>
+
+    <ng-container
+        *ngIf="isTemplate == true"
+    >
+        <ng-container
+            [ngTemplateOutlet]="$any(template)"
+            [ngTemplateOutletContext]="{ '$implicit': data }"
+        ></ng-container>
+    </ng-container>
+</div>

@@ -10,6 +10,7 @@
         }
         .mdc-dialog__surface {
             overflow: visible;
+            background-color: #0000;
         }
     }
 
@@ -25,20 +26,27 @@
 }
 
 :host {
-    user-select: none;
-    background: var(--ngx-tooltip-background-color, #333);
-
     min-width: 2px;
     min-height: 2px;
     display: block;
 }
 
-div {
+.void, .owner-mask {
     position: absolute;
-    // background-color: #ff000055;
 }
 
-.n { bottom: 100%; left: -100vw; right: -100vw; height: 100vh; z-index: -1 }
-.e { left: 100%; top: -100vh; bottom: -100vh; width: 100vw; z-index: -1 }
-.s { top: 100%; left: -100vw; right: -100vw; height: 100vh; z-index: -1 }
-.w { right: 100%; top: -100vh; bottom: -100vh; width: 100vw; z-index: -1 }
+.void {
+    top: -100vh;
+    right: -100vw;
+    bottom: -100vh;
+    left: -100vw;
+    z-index: -2
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    background: var(--ngx-tooltip-background-color, #333);
+    border-radius: 6px;
+    overflow: hidden;
+}
