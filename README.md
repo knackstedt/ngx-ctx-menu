@@ -1,4 +1,4 @@
-<a href="https://dotglitch.dev">
+<a href="https://dotglitch.dev/#/ContextMenuLibrary">
   <h1 align="center">ngx-ctx-menu</h1>
 </a>
 
@@ -15,6 +15,8 @@
 
 Quickstart 
 =====
+
+[Demo](https://dotglitch.dev/#/ContextMenuLibrary)
 
 ## Install
 
