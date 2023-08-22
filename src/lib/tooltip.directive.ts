@@ -72,6 +72,10 @@ export class NgxTooltipDirective {
     // Needs to be public so we can manually open the dialog
     @HostListener('pointerenter', ['$event'])
     public async onPointerEnter(evt: PointerEvent) {
+        // If the template is not a template ref, do nothing.
+        if (!(this.template instanceof TemplateRef))
+            return;
+
         const el = this.viewContainer.element.nativeElement;
         this.dialogInstance = await openTooltip(this.dialog, this.template, this.data, el, this.config);
     }
