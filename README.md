@@ -1,3 +1,5 @@
+> :warning: **This project has been moved**: [Here](https://github.com/knackstedt/dotglitch-ngx/blob/main/packages/common/src/directives/menu.directive.ts)
+
 <a href="https://dotglitch.dev/#/ContextMenuLibrary">
   <h1 align="center">ngx-ctx-menu</h1>
 </a>
